@@ -10,7 +10,7 @@ class Camera:
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (320,240)
-        camera.framerate = 30
+        camera.framerate = 15
         self.camera = camera
         self.rawCapture = PiRGBArray(camera, size=(320, 240))
         self.template = cv2.imread("arrow.jpg",cv2.IMREAD_GRAYSCALE)
@@ -30,7 +30,6 @@ class Camera:
         rotated =  cv2.warpAffine(img, M, (h, w))
         return rotated
 
-    
 
     def startcamera(self):
         # capture frames from the camera
@@ -49,34 +48,35 @@ class Camera:
                 check = False
                 arrow = self.rotation(arrow,angle)
                 match = cv2.matchTemplate(gray_img,arrow,cv2.TM_CCOEFF_NORMED)
-                found = numpy.where(match > 0.5)
+                found = numpy.where(match > 0.65)
                 w,h = arrow.shape[::-1]
                 for point in zip(*found[::-1]):
                     cv2.rectangle(image,point,(point[0]+w,point[1]+h),(255,255,255),1)
                     check = True
                 if (check):
                     cv2.imwrite("detected.jpg",image)
-                    print ("detected arrow orientatation :%d"%(angle))
+                    message =  ("detected arrow orientatation :%d"%(angle))
                     cv2.imshow("ARROW",image)
-                    break;
-
+                    rawCapture.truncate(0)
+                    return message
+                        
                 angle += 90 
+                    
         
 
-        # show the frame
+            # show the frame
             cv2.imshow("Frame", image)
-            key = cv2.waitKey(1) & 0xFF
+            key = cv2.waitKey(1) & 0xFF #[?]
 
-        # clear the stream in preparation for the next frame
+            # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
 
-        # if the `q` key was pressed, break from the loop
-            if key == ord("q"):
+            # if the `q` key was pressed, break from the loop [?]
+            if key == ord("q"): 
                 break
        
-              
+ 
 if __name__ == "__main__":
         c = Camera();
         c.startcamera();
-
   
