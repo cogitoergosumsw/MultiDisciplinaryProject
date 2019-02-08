@@ -1,5 +1,6 @@
 from bt import btconnection
 from c import Camera
+from arduino import ArduinoSerialCon
 from multiprocessing import Queue
 from threading import Thread, current_thread
 import time
@@ -17,12 +18,17 @@ class mainthreading(Thread):
         self.bt = btconnection()
         self.bt.establish_connection()
 
+        # set up arduino connection
+        self.arduino = ArduinoSerialCon()
+        self.arduino.listen()
+
         # set up camera
         self.camera = Camera()
 
         self.btread = Queue(maxsize=0)
         self.btwrite = Queue(maxsize=0)
         self.cameraread = Queue(maxsize=0)
+        self.arduino_read = Queue(maxsize=0)
         self.start_all_threads()
 
     def read_fromcamera(self):
@@ -72,23 +78,51 @@ class mainthreading(Thread):
         except:
             print("Exception writing BT")
 
+    def read_fromarduino(self):
+        # reading data from Arduino
+        print(current_thread(), 'Arduino read Thread')
+
+        while True:
+            data = arduino.receive()
+            if len(data > 0):
+                # TODO pass data to pc/android
+                print("%s: Data from Arduino || Data: %s" % (time.ctime(), data))
+
+    def write_toarduino(self):
+        # writing data to Arduino
+        print(current_thread(), 'Write to Arduino Thread')
+
+        while True:
+            time.sleep(0.5)
+            # TODO get message from other components
+            # arduino.send(message)
+            print("%s: Sending data to Arduino: %s" % (time.ctime(), message))
+
     def start_all_threads(self):
-        ttt = Thread(target=self.read_frombluetooth)
-        tt = Thread(target=self.write_tobluetooth)
 
-        c = Thread(target=self.read_fromcamera)
+        read_from_bt_thread = Thread(target=self.read_frombluetooth)
+        write_to_bt_thread = Thread(target=self.write_tobluetooth)
+        camera_thread = Thread(target=self.read_fromcamera)
+        read_from_arduino_thread = Thread(target=self.read_fromarduino)
+        write_to_arduino_thread = Thread(target=self.write_toarduino)
 
-        ttt.setDaemon(True)
-        tt.setDaemon(True)
-        c.setDaemon(True)
+        read_from_bt_thread.setDaemon(True)
+        write_to_bt_thread.setDaemon(True)
+        camera_thread.setDaemon(True)
+        read_from_arduino_thread.setDaemon(True)
+        write_to_arduino_thread.setDaemon(True)
 
-        ttt.start()
-        tt.start()
-        c.start()
+        read_from_bt_thread.start()
+        write_to_bt_thread.start()
+        camera_thread.start()
+        read_from_arduino_thread.start()
+        write_to_arduino_thread.start()
 
-        ttt.join()
-        tt.join()
-        c.join()
+        read_from_bt_thread.join()
+        write_to_bt_thread.join()
+        camera_thread.join()
+        read_from_arduino_thread.join()
+        write_to_arduino_thread.join()
 
 
 if __name__ == "__main__":
@@ -100,3 +134,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Main Thread killed")
         sys.exit()
+s

@@ -6,11 +6,12 @@ SERIAL_PORT = '/dev/ttyACM0'
 
 class ArduinoSerialCon(object):
     def __init__(self):
-        self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=2)
+        self.serial_connection = None
 
     def listen(self):
         try:
             print("Listening for serial connection")
+            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=2)
             if self.serial_connection:
                 print("Established connection to Arduino serial port")
         except Exception as e:
