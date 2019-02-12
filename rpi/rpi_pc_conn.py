@@ -1,38 +1,41 @@
-from tcpcom import TCPServer, TCPClient
-import time
+# Bi-directional communication between RPi and PC
 
-# for establishing a bidirectional TCP/IP Connection with the PC (algorithm)
-# need tcpcom.py file to be in the same directory as this current file
+IP_ADDRESS = "192.168.18.18"
+IP_PORT = 77
 
-IP_ADDRESS = "192.168.0.17"
-IP_PORT = 54321
+import socket, time
 
 
-def onStateChanged(state, msg):
-    if state == "LISTENING":
-        print
-        "RPi - PC || Listening..."
-    elif state == "CONNECTED":
-        print
-        "RPi - PC || Connected to", msg
-    elif state == "MESSAGE":
-        print
-        "RPi - PC || Message received:", msg
+def Tcp_connect(HostIp, Port):
+    global s
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HostIp, Port))
+    return
 
 
-client = TCPClient(IP_ADDRESS, IP_PORT, stateChanged=onStateChanged)
-pc = client.connect()
-if pc:
-    isConnected = True
-    while isConnected:
-        message = "test message to pc"
-        print
-        "RPi - PC || Sending command: %s", message
-        # TODO - prepare to forward the messages from Arduino and PC to the respective components
-        client.sendMessage(message)
-        time.sleep(1)
-else:
-    print
-    "RPi - PC || Connection failed"
+def Tcp_Write(D):
+    s.send(D + '\r')
+    return
 
-server = TCPServer(IP_PORT, stateChanged=onStateChanged)
+
+def Tcp_Read():
+    a = ' '
+    b = ''
+    while a != '\r':
+        a = s.recv(1)
+        b = b + a
+    return b
+
+
+def Tcp_Close():
+    s.close()
+    return
+
+
+Tcp_connect(IP_ADDRESS, IP_PORT)
+Tcp_Write('hi connected')
+print
+print(Tcp_Read())
+Tcp_Write('hi from macbook')
+print(Tcp_Read())
+Tcp_Close()
