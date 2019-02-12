@@ -2,6 +2,7 @@ from tcpcom import TCPServer, TCPClient
 import time
 
 # for establishing a bidirectional TCP/IP Connection with the PC (algorithm)
+# need tcpcom.py file to be in the same directory as this current file
 
 IP_ADDRESS = "192.168.0.17"
 IP_PORT = 54321
