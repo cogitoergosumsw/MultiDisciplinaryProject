@@ -1,5 +1,6 @@
-from bt import btconnection
-from c import Camera
+from rpi.bt import btconnection
+from rpi.c import Camera
+from rpi.arduino import ArduinoSerialCon
 from multiprocessing import Queue
 import Queue as qq
 from threading import Thread,current_thread
@@ -24,12 +25,37 @@ class mainthreading(Thread):
 		self.btwrite = Queue(maxsize = 0)
 		self.cameraread = Queue(maxsize = 0)
 		
+		self.arduino_read = Queue(maxsize = 0)
+		self.arduino_write = Queue(maxsize = 0)
+		
 		#create queue for camera threads
 		self.cameraaa = qq.Queue()
+		
+		self.arduino = ArduinoSerialCon()
+		self.arduino.listen()
 		
 
 		self.start_all_threads()
 		
+		
+		
+	def read_fromardunio(self):
+		print (current_thread(), 'arduino read Thread')
+		while True:
+			data = self.arduino.read()
+			if len(data>0):
+				#TODO pass data to pc/android
+				pass
+			print ("%s: Data from Arduino || Data: %s" % (time.ctime(), data))
+        
+
+	def write_toardunio(self):
+		print (current_thread(), 'arduino write Thread')
+		while True:
+			if not(self.arduino_write.empty()):
+				pass
+			#print ("%s: Sending data to Arduino: %s" % (time.ctime(), message))
+            
 	
 	#listen to camera queue
 	def listen_tocamera(self):
@@ -38,7 +64,7 @@ class mainthreading(Thread):
 			if not(self.cameraaa.empty()):
 				try:
 					message = self.cameraaa.get()
-					self.btwrite.put_nowait(message)
+					self.cameraread.put_nowait(message)
 				except:
 					print "error reading from camera"
 
@@ -101,21 +127,29 @@ class mainthreading(Thread):
 		c = Thread(target=self.startcamera)
 		c1 = Thread(target=self.listen_tocamera)
 		
+		ar = Thread(target=self.read_fromardunio)
+		aw = Thread(target=self.write_toardunio)
+		
 		ttt.setDaemon(True)
 		tt.setDaemon(True)
 		c.setDaemon(True)
 		c1.setDaemon(True)
+		ar.setDaemon(True)
+		aw.setDaemon(True)
 
 		ttt.start()
 		tt.start()
 		c.start()
 		c1.start()
-		
+		ar.start()
+		aw.start()
 		
 		ttt.join()
 		tt.join()
 		c.join()
 		c1.join()
+		ar.join()
+		aw.join()
 		
 
 		
