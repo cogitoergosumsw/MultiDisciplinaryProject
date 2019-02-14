@@ -7,7 +7,7 @@ import time
 import cv2
 
 class Camera:
-    def __init__(self):
+    def __init__(self,que):
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640,480)
@@ -16,6 +16,8 @@ class Camera:
         self.rawCapture = PiRGBArray(camera, size=(640, 480))
         # allow the camera to warmup
         time.sleep(0.2)
+        #start capturing
+        self.startcamera(que)
 
     def startcamera(self,cameraqueue):
         font = cv2.FONT_HERSHEY_COMPLEX
@@ -82,8 +84,9 @@ class Camera:
                         
                         
                         message = message+direction+str(area)
-                        print message
+                        print ("In camera class %s"%message)
                         cameraqueue.put(message)
+                        print cameraqueue.qsize()
                         cv2.putText(image, "arrow", (x, y), font, 4, (0, 0, 255))
 
             cv2.imshow("im",image)
