@@ -3,6 +3,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 from threading import Thread
 import numpy as np
+import math
 import time
 import cv2
 
@@ -18,6 +19,17 @@ class Camera:
         time.sleep(0.2)
         #start capturing
         self.startcamera(que)
+        
+    def checkangle(self,image,point1,point2,origin):
+        cv2.line(image,(point1),(origin),(255,255,255),thickness=2,lineType=8) 
+        cv2.line(image,(point2),(origin),(255,255,255),thickness=2,lineType=8)
+        #TODO
+        #m1 = (point1[1]-origin[1])/(point1[0]-origin[0])
+        #m2 = (point2[1]-origin[1])/(point2[0]-origin[0])
+        #angle = (math.degrees(math.atan2(m2,m1)))
+        #print angle
+        #if (abs(angle) == 90 or abs(angle) == 45):
+        return True
 
     def startcamera(self,cameraqueue):
         font = cv2.FONT_HERSHEY_COMPLEX
@@ -67,27 +79,24 @@ class Camera:
                         ud = np.linalg.norm(np.asarray(extTop)-np.asarray(extBot))
                         message ="Arrow at"
                         direction=""
-                        
                         if (rl>ud):
-
                                 if (np.linalg.norm(np.asarray(extLeft)-np.asarray(center)) < np.linalg.norm(np.asarray(extRight)-np.asarray(center))):
-                                    direction = "left"
+                                    if self.checkangle(image,extTop,extBot,extRight):
+                                            direction = 'left'
                                 else:
-                                    direction  = "right"
-                                        
-
+                                   if self.checkangle(image,extBot,extTop,extLeft):  
+                                        direction ="right"
                         else:
                             if  (np.linalg.norm(np.asarray(extTop)-np.asarray(center)) < np.linalg.norm(np.asarray(extBot)-np.asarray(center))):
-                                direction = "down"
+                                if self.checkangle(image,extLeft,extRight,extBot):  
+                                        direction = "down"
                             else:
-                                direction = "up"
-                        
-                        
-                        message = message+direction+str(area)
-                        print ("In camera class %s"%message)
-                        cameraqueue.put(message)
-                        print cameraqueue.qsize()
-                        cv2.putText(image, "arrow", (x, y), font, 4, (0, 0, 255))
+                                if self.checkangle(image,extRight,extLeft,extTop):
+                                        direction = "up"
+                        if (len(direction)>0):
+                                message = message+direction+str(area)
+                                cameraqueue.put(message)
+                                cv2.putText(image, "arrow", (x, y), font, 4, (0, 0, 255))
 
             cv2.imshow("im",image)
             rawCapture.truncate(0)
