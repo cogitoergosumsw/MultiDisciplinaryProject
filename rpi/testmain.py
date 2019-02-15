@@ -52,7 +52,7 @@ class mainthreading(Thread):
 		print (current_thread(), 'Arduino read Thread')
 		while True:
 			data = self.arduino.read()
-			if len(data>0):
+			if (len(data) > 0):
 				self.btlist.append(data)
 				self.tcplist.append(data)
 				print ("%s: Data from Arduino || Data: %s" % (time.ctime(), data))
