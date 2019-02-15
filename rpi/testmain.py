@@ -1,6 +1,7 @@
 from bt import btconnection
 from c import Camera
 from arduino import ArduinoSerialCon
+from rpi_pc_conn import TCPConnection
 from multiprocessing import Queue
 from multiprocessing import Process
 from collections import deque
@@ -19,6 +20,9 @@ class mainthreading(Thread):
 		#set up bluetooth connection
 		self.bt = btconnection()
 		self.bt.establish_connection()
+
+		#set up tcp connection
+		self.tcp = TCPConnection()
 		
 		#list of messages to subsystems
 		self.btlist = deque()
@@ -27,8 +31,6 @@ class mainthreading(Thread):
 		
 		#place holder queue for listening threads
 		self.placeholder = Queue(maxsize=0)
-		
-
 		
 		#create queue for camera threads
 		self.cameraaa = Queue(maxsize = 0)
@@ -120,6 +122,28 @@ class mainthreading(Thread):
 		except Exception as e:
 			print("Exception writing BT %s"%e)
 
+	#thread to read data from TCP connection
+	def read_fromtcpconnection(self):
+		print(current_thread(), 'TCP Connection read thread')
+
+		while(True):
+			data = self.tcp.tcp_read()
+			try:
+				if (len(data) > 0):
+					print("Data from TCP Connection: %s", data)
+					self.arduinolist.append(data)
+			except Exception as e:
+				print("Exception reading data from TCP Connection || Error: %s", e)
+
+	def write_totcpconnection(self):
+		print(current_thread(), 'TCP Connection write thread')
+
+		while(True):
+			if (len(self.tcplist)>0): #if there is data for PC
+				message = self.tcplist.pop()
+				self.tcp_write(message) # send message to PC
+				print("Sending message to PC || Data: %s")
+
 		
 	def start_all_threads(self):
 		ttt = Thread(target=self.read_frombluetooth)
@@ -130,6 +154,9 @@ class mainthreading(Thread):
 		
 		ar = Thread(target=self.read_fromardunio)
 		aw = Thread(target=self.write_toardunio)
+
+		tcpr = Thread(target=self.read_fromtcpconnection)
+		tcpw = Thread(target=self.write_totcpconnection)
 		
 		ttt.setDaemon(True)
 		tt.setDaemon(True)
@@ -137,6 +164,8 @@ class mainthreading(Thread):
 		c1.setDaemon(True)
 		ar.setDaemon(True)
 		aw.setDaemon(True)
+		tcpr.setDaemon(True)
+		tcpw.setDaemon(True)
 		
 		c.start()
 		c1.start()
@@ -145,6 +174,9 @@ class mainthreading(Thread):
 
 		ar.start()
 		aw.start()
+
+		tcpr.start()
+		tcpw.start()
 		
 		c.join()
 		c1.join()
@@ -153,7 +185,8 @@ class mainthreading(Thread):
 
 		ar.join()
 		aw.join()
-		
+		tcpr.join()
+		tcpw.join()
 
 		
 if __name__ == "__main__":
