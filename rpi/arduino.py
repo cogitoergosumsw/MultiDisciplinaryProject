@@ -11,7 +11,7 @@ class ArduinoSerialCon:
     def listen(self):
         try:
             print("Listening for serial connection")
-            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=2)
+            self.serial_connection = serial.Serial(self.SERIAL_PORT, self.BAUD_RATE, timeout=2)
             if self.serial_connection:
                 print("Establised connection to Arduino serial port")
         except Exception as e:
