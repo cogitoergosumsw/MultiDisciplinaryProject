@@ -15,7 +15,7 @@ class mainthreading(Thread):
 
 		Thread.__init__(self) 
 		
-		print current_thread(), 'Main Thread'
+		print (current_thread(), 'Main Thread')
 
 		#set up bluetooth connection
 		self.bt = btconnection()
@@ -42,14 +42,14 @@ class mainthreading(Thread):
 		self.start_all_threads()
 		
 	def info(self,title):
-		print title
+		print (title)
 		if hasattr(os, 'getppid'):  # only available on Unix
-			print 'parent process:', os.getppid()
-		print 'child process id:', os.getpid()
+			print ('parent process:', os.getppid())
+		print ('child process id:', os.getpid())
 		
 		
 	def read_fromardunio(self):
-		print (current_thread(), 'arduino read Thread')
+		print (current_thread(), 'Arduino read Thread')
 		while True:
 			data = self.arduino.read()
 			if len(data>0):
@@ -59,19 +59,20 @@ class mainthreading(Thread):
         
 
 	def write_toardunio(self):
-		print (current_thread(), 'arduino write Thread')
+		print (current_thread(), 'Arduino write Thread')
 		while True:
 			if (len(self.arduinolist) > 0):
 				message =  self.arduinolist.pop()
+				self.arduino.send(message)
 				print ("%s: Sending data to Arduino: %s" % (time.ctime(), message))
 
 			if (self.placeholder.qsize() > 0):
-				print "?"
+				print ("?")
             
 	
 	#listen to camera queue
 	def listen_tocamera(self):
-		print current_thread(), 'camera listen Thread'
+		print (current_thread(), 'camera listen Thread')
 		while (True):
 			if not(self.cameraaa.empty()):
 				try:
@@ -91,13 +92,13 @@ class mainthreading(Thread):
 				
 	#thread to read from bluetooth	
 	def read_frombluetooth(self):
-		print current_thread(),  'BT read Thread'
+		print (current_thread(),  'BT read Thread')
 		while (True):
 			data = self.bt.listen_msg()
 			try:
 				if (len(data) > 0):
 					print ("Data from bluetooth was: %s" %data) #if bluetooth recieves msg
-					#TODO send to pc?
+					self.tcplist.append(data)
 					self.arduinolist.append(data) #add to aurdino deque
 
 			except Exception as e:
@@ -106,7 +107,7 @@ class mainthreading(Thread):
 		
 	#thread to write to bluetooth 	 
 	def write_tobluetooth(self):
-		print current_thread(),  'BT write Thread'
+		print (current_thread(),  'BT write Thread')
 
 		try:
 			while (True):
@@ -117,7 +118,7 @@ class mainthreading(Thread):
 					print ("%s: Sending to Bluetooth || Data: %s" % (time.ctime(), message))
 					
 				if (self.placeholder.qsize() > 0):
-					print "?"
+					print ("?")
 					
 		except Exception as e:
 			print("Exception writing BT %s"%e)
@@ -143,6 +144,9 @@ class mainthreading(Thread):
 				message = self.tcplist.pop()
 				self.tcp_write(message) # send message to PC
 				print("Sending message to PC || Data: %s")
+
+			if (self.placeholder.qsize() > 0):
+				print ("?")
 
 		
 	def start_all_threads(self):
