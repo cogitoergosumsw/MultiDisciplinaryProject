@@ -21,15 +21,22 @@ class Camera:
         self.startcamera(que)
         
     def checkangle(self,image,point1,point2,origin):
+        line1 = np.linalg.norm(np.asarray(point1)-np.asarray(origin))
+        line2 = np.linalg.norm(np.asarray(point2)-np.asarray(origin))
+        hypo = np.linalg.norm(np.asarray(point2)-np.asarray(point1))
+        
         cv2.line(image,(point1),(origin),(255,255,255),thickness=2,lineType=8) 
         cv2.line(image,(point2),(origin),(255,255,255),thickness=2,lineType=8)
-        #TODO
-        #m1 = (point1[1]-origin[1])/(point1[0]-origin[0])
-        #m2 = (point2[1]-origin[1])/(point2[0]-origin[0])
-        #angle = (math.degrees(math.atan2(m2,m1)))
-        #print angle
-        #if (abs(angle) == 90 or abs(angle) == 45):
-        return True
+        cv2.line(image,(point1),(point2),(255,0,0),thickness=2,lineType=8) 
+        
+        angle = round(math.degrees(math.acos((line1**2 + line2**2 - hypo**2)/(2*line1*line2))),1)
+        
+        if (89<=angle<=91):
+                print angle
+                return True
+        else:
+                return False
+                
 
     def startcamera(self,cameraqueue):
         font = cv2.FONT_HERSHEY_COMPLEX
@@ -96,7 +103,7 @@ class Camera:
                         if (len(direction)>0):
                                 message = message+direction+str(area)
                                 cameraqueue.put(message)
-                                cv2.putText(image, "arrow", (x, y), font, 4, (0, 0, 255))
+                                #cv2.putText(image, "arrow", (x, y), font, 4, (0, 0, 255))
 
             cv2.imshow("im",image)
             rawCapture.truncate(0)
@@ -108,4 +115,4 @@ class Camera:
 if __name__ == "__main__":
         c = Camera();
         c.startcamera();
-"""  
+ """
