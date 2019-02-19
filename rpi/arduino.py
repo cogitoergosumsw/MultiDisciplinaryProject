@@ -8,11 +8,17 @@ class ArduinoSerialCon:
         self.serial_connection = None
         self.serial_port = '/dev/ttyACM0'
         self.baud_rate = 9600
+        
+    def establish_con(self):
+        try:
+            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=5)
+        except Exception as e:
+            return False
+        return True
 
     def listen(self):
         try:
             print("Listening for serial connection")
-            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=2)
             if self.serial_connection:
                 print("Establised connection to Arduino serial port")
         except Exception as e:

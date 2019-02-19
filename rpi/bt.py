@@ -13,15 +13,17 @@ class btconnection:
 		profiles = [ SERIAL_PORT_PROFILE ],  
 			protocols = [ OBEX_UUID ])
 
-	def establish_connection(self):
+	def establish_con(self):
 		print("Waiting for connection on RFCOMM channel %d" % self.port)
 		server_sock = self.server_sock
 		try:
 			client_sock, address = server_sock.accept()
 			self.client_sock = client_sock
+			return True
 		except:
 			print ("Error connecting to Bluetooth")
 		print("Accepted connection from ", address)
+		return False
 	
 	
 	def send_msg(self,message):

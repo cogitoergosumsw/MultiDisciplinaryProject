@@ -1,8 +1,8 @@
 # Bi-directional communication between RPi and PC
 # RPi as the server, PC as the client
 
-IP_ADDRESS = "192.168.18.20"  # IP Address of PC
-IP_PORT = 12316  # change accordingly if IP port not closed
+#IP_ADDRESS = "192.168.18.20"  # IP Address of PC
+IP_PORT = 12318  # change accordingly if IP port not closed
 
 import socket
 
@@ -12,9 +12,17 @@ class TCPConnection:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    
+    def establish_con(self):
         self.tcp_server_wait(5, IP_PORT)
         self.tcp_server_next()
-
+        if (self.sock is None):
+            return False
+        return True
+        
+        
+    """
     def tcp_connect(self, host_ip, host_port):
         try:
             self.sock.connect((host_ip, host_port))
@@ -23,6 +31,7 @@ class TCPConnection:
                 "TCP Connection error, unable to establish TCP Connection with PC || IP Address: {0} || IP Port: {1}".format(
                     host_ip, host_port))
         return "TCP Connection Established: %s", self.sock
+    """
 
     def tcp_server_wait(self, num_of_client_wait, ip_port):
         self.sock2.bind(('', ip_port))
@@ -35,7 +44,7 @@ class TCPConnection:
     def tcp_write(self, message):
         try:
             self.sock.send(message.encode())
-            return "Message sent: %s" % message
+            print "Message sent from server to algorithim: %s" % message
         except Exception as e:
             print("Error sending data to PC || Error: %s" % e)
 
