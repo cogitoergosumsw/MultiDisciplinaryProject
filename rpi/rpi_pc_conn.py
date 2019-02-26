@@ -51,14 +51,16 @@ class TCPConnection:
     def tcp_read(self):
         temp = ' '
         msg_read = ''
-        while temp != '\r':
+        while True:
             temp = self.sock.recv(1024)
+            if (temp == ""):
+                self.tcp_close()
+                break
             temp = temp.decode()
             msg_read = msg_read + temp
             print("Message read from TCP connection: %s" % msg_read)
-        return msg_read
+            return msg_read
 
     def tcp_close(self):
         self.sock.close()
         self.sock2.close()
-        return "TCP Connection Closed"

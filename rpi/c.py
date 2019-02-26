@@ -1,6 +1,7 @@
 # import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from multiprocessing import Queue
 from threading import Thread
 import numpy as np
 import math
@@ -11,14 +12,16 @@ class Camera:
     def __init__(self,que):
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
-        camera.resolution = (640,480)
-        camera.framerate = 30
+        camera.resolution = (320,240)
+        camera.framerate = 50
         self.camera = camera
-        self.rawCapture = PiRGBArray(camera, size=(640, 480))
+        self.rawCapture = PiRGBArray(camera, size=(320, 240))
         # allow the camera to warmup
         time.sleep(0.2)
         #start capturing
         self.startcamera(que)
+
+
         
     def checkangle(self,image,point1,point2,origin):
         line1 = np.linalg.norm(np.asarray(point1)-np.asarray(origin))
@@ -55,7 +58,9 @@ class Camera:
 
             kernel = np.ones((7, 7), np.uint8)
             im_bw = cv2.erode(im_bw,kernel)
+            
             _,contours,_ = cv2.findContours(im_bw,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            
             for cnt in contours:
 
 
@@ -64,7 +69,7 @@ class Camera:
                 y = approx.ravel()[1]
                 cv2.drawContours(image,[approx],0,(0,255,0),5)
                 area = cv2.contourArea(cnt)
-                if ((area > 2000) ):
+                if ((area > 100) ):
                     if len(approx) == 7:
                         #https://www.learnopencv.com/find-center-of-blob-centroid-using-opencv-cpp-python/
                         M = cv2.moments(cnt)
@@ -87,23 +92,22 @@ class Camera:
                         message ="Arrow at"
                         direction=""
                         if (rl>ud):
-                                if (np.linalg.norm(np.asarray(extLeft)-np.asarray(center)) < np.linalg.norm(np.asarray(extRight)-np.asarray(center))):
-                                    if self.checkangle(image,extTop,extBot,extRight):
-                                            direction = 'left'
-                                else:
-                                   if self.checkangle(image,extBot,extTop,extLeft):  
+                                if self.checkangle(image,extTop,extBot,extRight):
+                                        direction = 'left'
+                                if self.checkangle(image,extBot,extTop,extLeft):  
                                         direction ="right"
                         else:
-                            if  (np.linalg.norm(np.asarray(extTop)-np.asarray(center)) < np.linalg.norm(np.asarray(extBot)-np.asarray(center))):
                                 if self.checkangle(image,extLeft,extRight,extBot):  
                                         direction = "down"
-                            else:
                                 if self.checkangle(image,extRight,extLeft,extTop):
                                         direction = "up"
+                                
                         if (len(direction)>0):
                                 message = message+direction+str(area)
+                                print message
                                 cameraqueue.put(message)
-                                #cv2.putText(image, "arrow", (x, y), font, 4, (0, 0, 255))
+                                cv2.putText(image, "arrow", (x, y), font, 2, (0, 0, 255))
+            
 
             cv2.imshow("im",image)
             rawCapture.truncate(0)
@@ -113,6 +117,7 @@ class Camera:
         
 """
 if __name__ == "__main__":
-        c = Camera();
-        c.startcamera();
- """
+        placeholder = Queue(maxsize=0)
+        c = Camera(placeholder);
+"""
+ 

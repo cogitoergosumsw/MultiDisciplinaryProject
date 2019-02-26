@@ -7,7 +7,7 @@ class ArduinoSerialCon:
     def __init__(self):
         self.serial_connection = None
         self.serial_port = '/dev/ttyACM0'
-        self.baud_rate = 9600
+        self.baud_rate = 115200
         
     def establish_con(self):
         try:
