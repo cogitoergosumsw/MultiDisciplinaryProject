@@ -35,7 +35,6 @@ class Camera:
         angle = round(math.degrees(math.acos((line1**2 + line2**2 - hypo**2)/(2*line1*line2))),1)
         
         if (89<=angle<=91):
-                print angle
                 return True
         else:
                 return False
@@ -89,21 +88,20 @@ class Camera:
                         
                         rl = np.linalg.norm(np.asarray(extLeft)-np.asarray(extRight))
                         ud = np.linalg.norm(np.asarray(extTop)-np.asarray(extBot))
-                        message ="Arrow at"
-                        direction=""
+                        message=""
                         if (rl>ud):
                                 if self.checkangle(image,extTop,extBot,extRight):
-                                        direction = 'left'
+                                        message = 'AL:'
                                 if self.checkangle(image,extBot,extTop,extLeft):  
-                                        direction ="right"
+                                        message ="AR:"
                         else:
                                 if self.checkangle(image,extLeft,extRight,extBot):  
-                                        direction = "down"
+                                        message = "AD:"
                                 if self.checkangle(image,extRight,extLeft,extTop):
-                                        direction = "up"
+                                        message = "AU:"
                                 
-                        if (len(direction)>0):
-                                message = message+direction+str(area)
+                        if (len(message)>0):
+                                message = message+str(area/1000)
                                 print message
                                 cameraqueue.put(message)
                                 cv2.putText(image, "arrow", (x, y), font, 2, (0, 0, 255))
