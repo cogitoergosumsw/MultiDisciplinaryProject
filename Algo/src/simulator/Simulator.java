@@ -30,6 +30,7 @@ import javafx.concurrent.Task;
  * @author Lyu Xintong Isabelle
  */
 
+//THIS IS TO CHECK THE COMMIT ISSUES
 
 public class Simulator{
 
