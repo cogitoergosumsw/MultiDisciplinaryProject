@@ -176,40 +176,95 @@ public class Simulator{
         
     }
     
-    private static void addButton_wayPoint() {
-    	JButton btn_wayPoint= new JButton("Set Way Point");	
-		
-    	btn_wayPoint.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                final JDialog wayPointDialog = new JDialog(mainFrame, "Set Way Point", true);
-                wayPointDialog.setSize(400, 60);
-                wayPointDialog.setLayout(new FlowLayout());
-                final JTextField wayPointTF = new JTextField(5);
-                JButton saveButton = new JButton("OK");
+	private static void addButton_wayPoint() {
+		JButton btn_wayPoint = new JButton("Set Way Point");
 
-                saveButton.addMouseListener(new MouseAdapter() {
-                    public void mousePressed(MouseEvent e) {
-                        wayPointDialog.setVisible(false);
-                        String wp = wayPointTF.getText();
-                        String[] wpArry = wp.split(",");
-                        int row = Integer.parseInt(wpArry[0]);
-                        int col = Integer.parseInt(wpArry[1]);
-                        wayPoint = new Cell(row, col);    
-                        exploredMap.grid[row][col].setIsWayPoint();
-                        
-                        CardLayout cl = ((CardLayout) mapPanel.getLayout());
-                        cl.show(mapPanel, "EXPLORED_MAP");
-                    	exploredMap.repaint();
-                    }
-                });
+		btn_wayPoint.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
 
-                wayPointDialog.add(new JLabel("way point ( row,col E.g. 1,3 ) : "));
-                wayPointDialog.add(wayPointTF);
-                wayPointDialog.add(saveButton);
-                wayPointDialog.setVisible(true);
-            }
-        });
-        buttonPanel.add(btn_wayPoint);	
+				double row;
+				double col;
+				final double s_row;
+				final double s_col;
+				System.out.println("Initialized row and col");
+
+				s_col = mapPanel.getWidth();
+				s_row = mapPanel.getHeight();
+
+				/*
+				 * System.out.println(s_row); System.out.println(s_col);
+				 */
+
+				mapPanel.addMouseListener(new MouseAdapter() {
+					public void mousePressed(MouseEvent e) {
+						System.out.println("mouse is pressed");
+
+						double mousex, mousey;
+						mousex = e.getX();
+						mousey = e.getY();
+
+						double min_width, max_width, min_height, max_height;
+
+						min_width = 120;
+						max_width = 0.89 * s_col;
+						min_height = 0.05 * s_row;
+						max_height = 0.98 * s_row;
+
+						double mousex2, mousey2;
+
+						mousex2 = mousex - min_width;
+						mousey2 = mousey - min_height;
+
+						int sub_row = Constants.MAP_ROW - (int) Math.ceil(mousex2 / 30); // if GraphicsConstants.CELL_SIZE change, this is
+																		// change
+						int sub_col = Constants.MAP_COL - (int) Math.ceil(mousey2 / 30);
+
+						System.out.println(sub_row);
+						System.out.println(sub_col);
+
+						if (exploredMap.grid[sub_row][sub_col].getIsWayPoint()) {
+							System.out.println(exploredMap.grid[sub_row][sub_col].getIsWayPoint());
+							exploredMap.grid[sub_row][sub_col].setIsNotWayPoint();
+							System.out.println("set is not a way point");
+						} else {
+							exploredMap.grid[sub_row][sub_col].setIsWayPoint();
+							System.out.println("set as a way point");
+
+						}
+
+//                final JDialog wayPointDialog = new JDialog(mainFrame, "Set Way Point", true);
+//                wayPointDialog.setSize(400, 60);
+//                wayPointDialog.setLayout(new FlowLayout());
+//                final JTextField wayPointTF = new JTextField(5);
+//                JButton saveButton = new JButton("OK");
+//
+//                saveButton.addMouseListener(new MouseAdapter() {
+//                    public void mousePressed(MouseEvent e) {
+//                        wayPointDialog.setVisible(false);
+//                        String wp = wayPointTF.getText();
+//                        String[] wpArry = wp.split(",");
+//                        int row = Integer.parseInt(wpArry[0]);
+//                        int col = Integer.parseInt(wpArry[1]);
+//                        wayPoint = new Cell(row, col);    
+//                        exploredMap.grid[row][col].setIsWayPoint();
+//                        
+//                        CardLayout cl = ((CardLayout) mapPanel.getLayout());
+//                        cl.show(mapPanel, "EXPLORED_MAP");
+//                    	exploredMap.repaint();
+//                    }
+//                });
+//
+//                wayPointDialog.add(new JLabel("way point ( row,col E.g. 1,3 ) : "));
+//                wayPointDialog.add(wayPointTF);
+//                wayPointDialog.add(saveButton);
+//                wayPointDialog.setVisible(true);
+					}
+				});
+
+			}
+		});
+
+		buttonPanel.add(btn_wayPoint);
 	}
 
 
@@ -472,9 +527,6 @@ public class Simulator{
         }
     }
 
-    
-
-    
     /**
      *  Coverage limited exploration Class for Multi-threading
      */

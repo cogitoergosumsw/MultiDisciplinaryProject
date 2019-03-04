@@ -4,7 +4,7 @@ package map;
 import java.awt.*;
 
 class GraphicsConstants {
-    public static final int CELL_LINE_WEIGHT = 2;
+    public static final int CELL_LINE_WEIGHT = 1;
 
     public static final Color C_START = new Color(552600);
     public static final Color C_GOAL = Color.ORANGE;
