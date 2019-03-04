@@ -30,7 +30,7 @@ import javafx.concurrent.Task;
  * @author Lyu Xintong Isabelle
  */
 
-// THIS IT TO TEST AGAIN
+
 
 public class Simulator{
 
