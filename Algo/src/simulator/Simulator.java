@@ -1,9 +1,6 @@
 package simulator;
 
 import javax.swing.*;
-
-import com.sun.java.accessibility.util.java.awt.ButtonTranslator;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,7 +20,7 @@ import static utils.MapDescriptor.generateMapDescriptor;
 
 import algorithms.ExplorationAlgo;
 import algorithms.FastestPathAlgo;
-import javafx.concurrent.Task;
+
 
 /**
  * Simulator  
@@ -37,7 +34,7 @@ public class Simulator{
     private static JFrame mainFrame;
     private static JPanel mapPanel, buttonPanel, textPanel;
     public static JTextArea textArea;
-    private static boolean realRun = true;
+    private static boolean realRun = false;
     private static Robot bot;
     private static Map exploredMap = null;
     private static Map realMap = null;
@@ -122,7 +119,7 @@ public class Simulator{
         
         addMap();
         addButtons();
-        addTextArea();
+        //addTextArea();
         
         // display the JFrame
         mainFrame.setVisible(true);
