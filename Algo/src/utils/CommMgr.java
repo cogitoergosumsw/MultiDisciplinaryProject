@@ -114,8 +114,8 @@ public class CommMgr {
         }
     }
 
-    public void sendMsg(String msgType){
-    	this.sendMsg(null, msgType);
+    public void sendMsg(String msg){
+    	this.sendMsg(null, msg);
     }
     
     

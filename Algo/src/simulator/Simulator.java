@@ -64,17 +64,18 @@ public class Simulator{
         exploredMap.setAllUnexplored();
     	
     	createSimulator();
-    	String msg = "A|0,1,2,3,4,5;";
-    	String[] msgArr = msg.split("\\|");
-    	System.out.println(msgArr.length);
-        String[] readings = msgArr[1].split(",");
-        for (int i = 0; i<readings.length;i++){
-        	System.out.println(Integer.parseInt(readings[i].replaceAll("\\p{Punct}", "")));
-        }
     	
     	if (realRun)
     		realRunConnection();
-    }
+    	
+    	
+    	
+    	String a = "F";
+    	for (int i =0; i<5-1;i++){
+    		a += "F";
+    	}
+    	System.out.print(a);
+    }   	
 
 
     //TODO
@@ -480,12 +481,30 @@ public class Simulator{
             
             if (wayPoint != null){
             	// if wayPoint is set, go to way point first before going to the goal 
-            	fastestPath.runFastestPath(wayPoint.getRow(),wayPoint.getCol());
+            	String path1 = fastestPath.runFastestPath(wayPoint.getRow(),wayPoint.getCol());
                 fastestPath = new FastestPathAlgo(exploredMap, bot);
-                fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+                String path2 = fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+                
+                if (realRun) {
+                	comm.sendMsg(path1);
+                	comm.sendMsg(path2);
+                }
+                
+                
+                
             } else {
-            	fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);  
+            	String path = fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);  
+            	
+            	
+            	if (realRun) {
+            		comm.sendMsg(path);
+            	}
+            
             }
+            
+            
+            
+            
             
            return 222;
         }

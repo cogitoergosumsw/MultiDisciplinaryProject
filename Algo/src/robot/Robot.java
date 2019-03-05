@@ -173,35 +173,36 @@ public class Robot{
     }
 
 
-    /**
-     * Sends a number instead of 'F' for multiple continuous forward movements.
-     */
     public void moveForwardMultiple(int count) {
         if (count == 1) {
             move(MOVEMENT.FORWARD);
         } else {
             CommMgr comm = CommMgr.getCommMgr();
             if (count == 10) {
-                comm.sendMsg("0", CommMgr.INSTRUCTIONS);
+                comm.sendMsg("");
             } else if (count < 10) {
-                comm.sendMsg(Integer.toString(count), CommMgr.INSTRUCTIONS);
+            	String msg = "F";
+            	for (int i = 0; i< count - 1; i++){
+            		msg += "F";
+            	}
+                comm.sendMsg(msg);
             }   
             
-            switch (robotDir) {
-                case NORTH:
-                    posRow += count;
-                    break;
-                case EAST:
-                    posCol += count;
-                    break;
-                case SOUTH:
-                    posRow += count;
-                    break;
-                case WEST:
-                    posCol += count;
-                    break;
-            }
-            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
+//            switch (robotDir) {
+//                case NORTH:
+//                    posRow += count;
+//                    break;
+//                case EAST:
+//                    posCol += count;
+//                    break;
+//                case SOUTH:
+//                    posRow += count;
+//                    break;
+//                case WEST:
+//                    posCol += count;
+//                    break;
+//            }
+//            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
         }
     }
     
