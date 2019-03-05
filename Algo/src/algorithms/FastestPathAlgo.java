@@ -108,10 +108,10 @@ public class FastestPathAlgo {
                 path = getPath(goalRow, goalCol);
                 printFastestPath(path);
                 return executePath(path, goalRow, goalCol);
+                
             }
-            updateNeighbors(curCell);
             
-            
+            updateNeighbors(curCell);  
 		} while (!toVisit.isEmpty());
 		
 		System.out.println("Path not found!");
@@ -325,6 +325,7 @@ public class FastestPathAlgo {
             }
 		}
         System.out.println("\nMovements: " + outputString.toString());
+        
         return outputString.toString();
 	}
 	

@@ -14,14 +14,19 @@ public class CommMgr {
 
     public static final String EX_START = "EX_START";       // Android --> PC
     public static final String FP_START = "FP_START";       // Android --> PC
-    public static final String EX_DONE = "EX_DONE";			// PC --> Android
-    public static final String FP_DONE = "FP_DONE";			// PC --> Android
-    public static final String MAP_STRINGS = "MAP";         // PC --> Android
+    public static final String EX_DONE = "EXPLORE_DONE";			// PC --> Android
+    public static final String FP_DONE = "FASTEST_DONE";			// PC --> Android
+
     public static final String BOT_POS = "BOT_POS";         // PC --> Android
     public static final String BOT_START = "BOT_START";     // PC --> Arduino
     public static final String INSTRUCTIONS = "INSTR";      // PC --> Arduino
+    public static final String MAP_STRING1 ="EXPLORED_DATA"; // PC --> Arduino
+    public static final String MAP_STRING2 = "OBSTACLE_DATA"; // PC --> Arduino
     public static final String SENSOR_DATA = "SENSOR_DATA";       // Arduino --> PC
     public static final String WAYPOINT_DATA = "WAYPOINT_DATA"; // // Arduino --> PC
+    
+    public static final String MOVE = "MOVE";
+    
     
     
     private static CommMgr commMgr = null;
@@ -46,10 +51,10 @@ public class CommMgr {
         System.out.println("Opening connection...");
 
         try {
-            String HOST = "192.168.18.18";
-            int PORT = 12317;
-//        	String HOST = "127.0.0.1";
-//        	int PORT = 10010;
+//            String HOST = "192.168.18.18";
+//            int PORT = 12317;
+        	String HOST = "127.0.0.1";
+        	int PORT = 10010;
         	
             conn = new Socket(HOST, PORT);
             System.out.println("connected...");

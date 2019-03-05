@@ -63,6 +63,13 @@ public class RequestHandler extends Thread {
         send("EX_START");
         
     }
+    
+	public void sendReadings() {
+		String msg = "SENSOR_DATA|0,0,0,1,1,0;";
+		
+		send(msg);
+		
+	}
 
     public void sendWayPoint() {
     	
@@ -219,4 +226,6 @@ public class RequestHandler extends Thread {
     public static void main(String[] args) throws IOException {
         RequestHandler handler = new RequestHandler(null);
     }
+
+
 }

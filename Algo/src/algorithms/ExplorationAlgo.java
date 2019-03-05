@@ -76,7 +76,7 @@ public class ExplorationAlgo {
         endTime = startTime + (timeLimit * 1000);
 
         if (bot.getRealBot()) {
-            CommMgr.getCommMgr().sendMsg(null, CommMgr.BOT_START);
+            CommMgr.getCommMgr().sendMsg(CommMgr.BOT_START);
         }
         
         bot.setSensors();
@@ -114,15 +114,10 @@ public class ExplorationAlgo {
 
        
         goHome();
-        
-        //delete later 
 
-//        
-//        
-//        if (bot.getRealBot()){
-//        	 CommMgr.getCommMgr().sendMsg(CommMgr.EX_DONE);
-//        }
-//        
+        
+        
+        
     }
     /**
      * explore unexplored area by going to the nearest unexplored cell

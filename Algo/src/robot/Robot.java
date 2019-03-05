@@ -160,7 +160,9 @@ public class Robot{
     }
 
     if (realBot) sendMovement(m, sendMoveToAndroid);
-    else System.out.println("Move: " + MOVEMENT.print(m));
+    
+    System.out.println("Move: " + MOVEMENT.print(m));
+    
     updateTouchedGoal();
 
     }
@@ -178,15 +180,13 @@ public class Robot{
             move(MOVEMENT.FORWARD);
         } else {
             CommMgr comm = CommMgr.getCommMgr();
-            if (count == 10) {
-                comm.sendMsg("");
-            } else if (count < 10) {
-            	String msg = "F";
-            	for (int i = 0; i< count - 1; i++){
-            		msg += "F";
-            	}
-                comm.sendMsg(msg);
-            }   
+            
+        	String msg = "F";
+        	for (int i = 0; i< count - 1; i++){
+        		msg += "F";
+        	}
+            comm.sendMsg(msg, CommMgr.MOVE);
+            
             
 //            switch (robotDir) {
 //                case NORTH:
@@ -212,15 +212,16 @@ public class Robot{
      */
     private void sendMovement(MOVEMENT m, boolean sendMoveToAndroid) {
         CommMgr comm = CommMgr.getCommMgr();
-        comm.sendMsg(MOVEMENT.print(m) + "", CommMgr.INSTRUCTIONS);
-        if (m != MOVEMENT.CALIBRATE && sendMoveToAndroid) {
-            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
-        }
+        comm.sendMsg(Character.toString(MOVEMENT.print(m)), CommMgr.MOVE);
+//        if (m != MOVEMENT.CALIBRATE && sendMoveToAndroid) {
+//            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
+//        }
     }
     
     /**
      * Sets the sensors' position and direction according to the robot's current position and direction.
      */
+    
     public void setSensors() {
         switch (robotDir) {
             case NORTH:
@@ -286,7 +287,11 @@ public class Robot{
             result[4] = SSLeft2.sense(explorationMap, realMap);
             result[5] = SLRight.sense(explorationMap, realMap);
         } else {
-            CommMgr comm = CommMgr.getCommMgr();
+           
+        	//debug
+        	//System.out.println("debug: inside sense");
+        	
+        	CommMgr comm = CommMgr.getCommMgr();
             String msg = comm.recvMsg();
             String[] msgArr = msg.split("\\|");
             String[] readings = msgArr[1].split(",");
@@ -300,7 +305,15 @@ public class Robot{
                 result[4] = Integer.parseInt(readings[4].replaceAll("\\p{Punct}", ""));
                 result[5] = Integer.parseInt(readings[5].replaceAll("\\p{Punct}", ""));
             }
-
+     
+            
+            //debug
+            for (int i=0;i<6;i++){
+            	System.out.println(result[i]);
+            }
+           
+            
+            
             SSFront1.senseReal(explorationMap, result[0]);
             SSFront2.senseReal(explorationMap, result[1]);
             SSFront3.senseReal(explorationMap, result[2]);
@@ -308,8 +321,20 @@ public class Robot{
             SSLeft2.senseReal(explorationMap, result[4]);
             SLRight.senseReal(explorationMap, result[5]);
 
+            
+            
+            
+            
             String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
-            comm.sendMsg(mapStrings[0] + " " + mapStrings[1]);
+            //debug
+            System.out.println(mapStrings[0]);
+            System.out.println(mapStrings[1]);
+            
+            
+            
+            // TODO ???? send here ????
+            comm.sendMsg(mapStrings[0], CommMgr.MAP_STRING1);
+            comm.sendMsg(mapStrings[1], CommMgr.MAP_STRING2);
         }
 
         return result;

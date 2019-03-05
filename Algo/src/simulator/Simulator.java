@@ -34,7 +34,7 @@ public class Simulator{
     private static JFrame mainFrame;
     private static JPanel mapPanel, buttonPanel, textPanel;
     public static JTextArea textArea;
-    private static boolean realRun = false;
+    private static boolean realRun = true;
     private static Robot bot;
     private static Map exploredMap = null;
     private static Map realMap = null;
@@ -68,34 +68,26 @@ public class Simulator{
     	if (realRun)
     		realRunConnection();
     	
-    	
-    	
-    	String a = "F";
-    	for (int i =0; i<5-1;i++){
-    		a += "F";
-    	}
-    	System.out.print(a);
-    }   	
 
+    }   	
 
     //TODO
     private static void realRunConnection() {
     	String msg; 
     	
-    	while (true){
-    		msg = comm.recvMsg();
-    		if (msg != null){
-    			if (msg.equals(CommMgr.EX_START)){  		
-    				System.out.println("debug:hello \n\n\n");
-    				new Exploration().execute();           
-        		}
-    	    
-    	    	if (msg.equals(CommMgr.FP_START)){	
-    	    		new FastestPath().execute();
-    	    	}
-    		}  	
-   	}
-    		
+    	
+		msg = comm.recvMsg();
+		if (msg != null){
+			if (msg.equals(CommMgr.EX_START)){  		
+				System.out.println("debug:hello \n\n\n");
+				new Exploration().execute();           
+    		}
+	    
+	    	if (msg.equals(CommMgr.FP_START)){	
+	    		new FastestPath().execute();
+	    	}
+		}  	
+
 }
 
 
@@ -486,8 +478,9 @@ public class Simulator{
                 String path2 = fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
                 
                 if (realRun) {
-                	comm.sendMsg(path1);
-                	comm.sendMsg(path2);
+                	comm.sendMsg(path1, CommMgr.MOVE);
+                	comm.sendMsg(path2, CommMgr.MOVE);
+                	comm.sendMsg("",CommMgr.FP_DONE);
                 }
                 
                 
@@ -497,15 +490,12 @@ public class Simulator{
             	
             	
             	if (realRun) {
-            		comm.sendMsg(path);
+            		comm.sendMsg(path, CommMgr.MOVE);
+            		comm.sendMsg("",CommMgr.FP_DONE);
             	}
             
             }
-            
-            
-            
-            
-            
+ 
            return 222;
         }
     }
@@ -534,11 +524,18 @@ public class Simulator{
             exploration.runExploration();
             generateMapDescriptor(exploredMap);
 
+            
+            
             if (realRun) {
             	//TODO 
                 // figure this out later 
             	//new FastestPath().execute();
+            	
+            	
+            	
+            	CommMgr.getCommMgr().sendMsg("",CommMgr.EX_DONE);     
             }
+            
             return 111;
         }
     }
