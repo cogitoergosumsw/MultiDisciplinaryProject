@@ -159,9 +159,10 @@ public class Robot{
             break;
     }
 
-    if (realBot) sendMovement(m, sendMoveToAndroid);
-    
-    System.out.println("Move: " + MOVEMENT.print(m));
+    if (realBot) 
+    	sendMovement(m, sendMoveToAndroid);
+    else 
+    	System.out.println("Move: " + MOVEMENT.print(m));
     
     updateTouchedGoal();
 
@@ -293,6 +294,7 @@ public class Robot{
         	
         	CommMgr comm = CommMgr.getCommMgr();
             String msg = comm.recvMsg();
+            while (!msg.contains(CommMgr.SENSOR_DATA)){msg = comm.recvMsg();}
             String[] msgArr = msg.split("\\|");
             String[] readings = msgArr[1].split(",");
             
@@ -327,8 +329,9 @@ public class Robot{
             
             String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
             //debug
-            System.out.println(mapStrings[0]);
-            System.out.println(mapStrings[1]);
+            
+//            System.out.println(mapStrings[0]);
+//            System.out.println(mapStrings[1]);
             
             
             

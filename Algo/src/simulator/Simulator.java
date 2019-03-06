@@ -37,7 +37,7 @@ public class Simulator{
     private static JFrame mainFrame;
     private static JPanel mapPanel, buttonPanel, textPanel;
     public static JTextArea textArea;
-    private static boolean realRun = true;
+    private static boolean realRun = false;
     private static Robot bot;
     private static Map exploredMap = null;
     private static Map realMap = null;
@@ -81,27 +81,22 @@ public class Simulator{
     				
 		msg = comm.recvMsg();
 		
-		
-		
-		
-//
-		
-		while (!msg.contains(CommMgr.EX_START)){
-			
+		while (!msg.contains(CommMgr.EX_START)){	
 			if (msg.contains(CommMgr.EX_START)){  		
 				break ;         
 			}
-
-			
-			msg = comm.recvMsg();
-			
+			msg = comm.recvMsg();		
 		}
-			
-//		}
-//		
+		
 		if (msg.contains(CommMgr.EX_START)){  		
 				new Exploration().execute();           
     	}
+		
+		
+		
+		
+		
+		
    
 //	    if (msg.contains(CommMgr.FP_START)){	
 //	    		new FastestPath().execute();
@@ -240,6 +235,7 @@ public class Simulator{
 						System.out.println(sub_row);
 						System.out.println(sub_col);
 
+						wayPoint = new Cell(sub_row, sub_col);
 						if (exploredMap.grid[sub_row][sub_col].getIsWayPoint()) {
 							System.out.println(exploredMap.grid[sub_row][sub_col].getIsWayPoint());
 							exploredMap.grid[sub_row][sub_col].setIsNotWayPoint();
@@ -549,7 +545,8 @@ public class Simulator{
                 CommMgr.getCommMgr().sendMsg(CommMgr.BOT_START);
             }
             
-            System.out.println("debug: inside Exploration.....\n\n\n\n");
+            //debug
+            System.out.println("debug: inside Exploration.....");
             
             exploration.runExploration();
             generateMapDescriptor(exploredMap);

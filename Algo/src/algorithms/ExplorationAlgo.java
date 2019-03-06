@@ -70,7 +70,8 @@ public class ExplorationAlgo {
 //            }
 //        }
     	
-    	System.out.println("debug: inside runExploration \n\n");
+    	//debug
+    	System.out.println("debug: inside runExploration\n");
     	
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);

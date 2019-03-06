@@ -69,7 +69,7 @@ public class MapDescriptor {
                     Part1_bin.append("1");
                 else
                     Part1_bin.append("0");
-
+                
                 if (Part1_bin.length() == 4) {
                     Part1.append(binToHex(Part1_bin.toString()));
                     Part1_bin.setLength(0);
@@ -85,17 +85,17 @@ public class MapDescriptor {
         StringBuilder Part2_bin = new StringBuilder();
         for (int r = 0; r < Constants.MAP_ROW; r++) {
             for (int c = 0; c < Constants.MAP_COL; c++) {
-                if (map.getCell(r, c).getIsExplored()) {
-                    if (map.getCell(r, c).getIsObstacle())
-                        Part2_bin.append("1");
-                    else
-                        Part2_bin.append("0");
+                
+                if (map.getCell(r, c).getIsObstacle())
+                    Part2_bin.append("1");
+                else
+                    Part2_bin.append("0");
 
-                    if (Part2_bin.length() == 4) {
-                        Part2.append(binToHex(Part2_bin.toString()));
-                        Part2_bin.setLength(0);
-                    }
+                if (Part2_bin.length() == 4) {
+                    Part2.append(binToHex(Part2_bin.toString()));
+                    Part2_bin.setLength(0);
                 }
+                
             }
         }
         if (Part2_bin.length() > 0) Part2.append(binToHex(Part2_bin.toString()));
