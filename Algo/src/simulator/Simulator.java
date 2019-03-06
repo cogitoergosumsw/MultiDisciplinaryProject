@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.peer.ButtonPeer;
 import java.io.File;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import map.Map;
@@ -45,8 +47,8 @@ public class Simulator{
     private static int timeLimit = 3600;            
     private static int coverageLimit = 300;  
     
+    private static SwingWorker thread_exploration;
     
-    private static Exploration thread_exploration;
     
     public static void main(String[] args){
     	// establish connection if realRun
@@ -67,8 +69,8 @@ public class Simulator{
     	
     	if (realRun)
     		realRunConnection();
-    	
 
+    	
     }   	
 
     //TODO
@@ -77,16 +79,27 @@ public class Simulator{
     	
     	
 		msg = comm.recvMsg();
-		if (msg != null){
-			if (msg.equals(CommMgr.EX_START)){  		
-				System.out.println("debug:hello \n\n\n");
+
+		while (!msg.equals(CommMgr.EX_START)){
+			msg = comm.recvMsg();
+		}
+		
+		if (msg.equals(CommMgr.EX_START)){  		
 				new Exploration().execute();           
-    		}
-	    
-	    	if (msg.equals(CommMgr.FP_START)){	
-	    		new FastestPath().execute();
-	    	}
-		}  	
+    	}
+//	    
+//	    if (msg.equals(CommMgr.FP_START)){	
+//	    		new FastestPath().execute();
+//	    }
+//	    	
+//	    if (msg.equals(CommMgr.TIME_EX_START)){	
+//	    		new TimeExploration().execute();
+//	    }
+//	    	
+//	    if (msg.equals(CommMgr.COVERAGE_EX_START)){	
+//	    		new CoverageExploration().execute();
+//	    }
+	    	
 
 }
 
@@ -359,7 +372,9 @@ public class Simulator{
 //              cl.show(mapPanel, "EXPLORED_MAP"); 
             	
             	new Exploration().execute();
-                
+//                thread_exploration = new Exploration();
+//                thread_exploration.execute();
+     
 
             }
         });
@@ -439,14 +454,13 @@ public class Simulator{
         		exploredMap.reset();   
         		realMap.reset();      		
         		exploredMap.repaint();
-        		realMap.repaint(); 		
+        		realMap.repaint(); 			
         	}
         });
         buttonPanel.add(btn_reset);
     }
     
-    
-    
+
     /**
      *  Fastest path Class for Multi-threading
      */
@@ -504,8 +518,9 @@ public class Simulator{
      *  Exploration Class for Multi-threading 
      */
     public static class Exploration extends SwingWorker<Integer, String> {
-        protected Integer doInBackground() throws Exception {
-            
+        @Override
+    	protected Integer doInBackground() throws Exception {
+        	
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
             
@@ -535,8 +550,9 @@ public class Simulator{
             	
             	CommMgr.getCommMgr().sendMsg("",CommMgr.EX_DONE);     
             }
-            
+        	
             return 111;
+            
         }
     }
 
@@ -545,7 +561,7 @@ public class Simulator{
      */
     private static class CoverageExploration extends SwingWorker<Integer, String> {
         protected Integer doInBackground() throws Exception {
-            
+       
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
         	

@@ -122,7 +122,8 @@ public class Sensor {
 
     	
     	// sensor reading gives 0 if there's no obstacle 
-    	if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange
+//    	if (sensorVal == 0) 
+//    		 
 
         // If above fails, check if starting point is valid for sensors with lowerRange > 1.
         for (int i = 1; i < this.lowerRange; i++) {

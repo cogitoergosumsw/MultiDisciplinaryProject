@@ -25,8 +25,8 @@ import robot.Sensor;
  *         ^    ^    ^
  *        SR1  SR2  SR3
  *   < SR1 [X] [X] [X] LR >
- *   < SR2 [X] [X] [X] 
- *         [X] [X] [X]
+ *  	   [X] [X] [X] 
+ *   < SR2 [X] [X] [X]
  * 
  */
 
@@ -57,7 +57,7 @@ public class Robot{
         SSFront2 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol, this.robotDir, "SRSSFront2");
         SSFront3 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol + 1, this.robotDir, "SSFront3");
         SSLeft1 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol - 1,findNewDirection(MOVEMENT.LEFT) , "SSLeft1");
-        SSLeft2 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow, this.posCol - 1, findNewDirection(MOVEMENT.LEFT), "SSLeft2");
+        SSLeft2 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow - 1, this.posCol - 1, findNewDirection(MOVEMENT.LEFT), "SSLeft2");
         SLRight = new Sensor(RobotConstants.SENSOR_LONG_RANGE_L, RobotConstants.SENSOR_LONG_RANGE_H, this.posRow+1, this.posCol + 1, findNewDirection(MOVEMENT.RIGHT) , "SLRight");
         
     }
@@ -229,7 +229,7 @@ public class Robot{
                 SSFront2.setSensor(this.posRow + 1, this.posCol, DIRECTION.NORTH);
                 SSFront3.setSensor(this.posRow + 1, this.posCol + 1, DIRECTION.NORTH);
                 SSLeft1.setSensor(this.posRow + 1, this.posCol - 1, DIRECTION.WEST);
-                SSLeft2.setSensor(this.posRow, this.posCol - 1,  DIRECTION.WEST);
+                SSLeft2.setSensor(this.posRow - 1, this.posCol - 1,  DIRECTION.WEST);
                 SLRight.setSensor(this.posRow + 1, this.posCol + 1,  DIRECTION.EAST);
                 break;
             case EAST:
@@ -237,7 +237,7 @@ public class Robot{
                 SSFront2.setSensor(this.posRow, this.posCol + 1, DIRECTION.EAST);
                 SSFront3.setSensor(this.posRow - 1, this.posCol + 1, DIRECTION.EAST);
                 SSLeft1.setSensor(this.posRow + 1, this.posCol + 1, DIRECTION.NORTH);
-                SSLeft2.setSensor(this.posRow + 1, this.posCol, DIRECTION.NORTH);
+                SSLeft2.setSensor(this.posRow + 1, this.posCol - 1, DIRECTION.NORTH);
                 SLRight.setSensor(this.posRow - 1, this.posCol + 1, DIRECTION.SOUTH);
                 break;
             case SOUTH:
@@ -245,7 +245,7 @@ public class Robot{
                 SSFront2.setSensor(this.posRow - 1, this.posCol, DIRECTION.SOUTH);
                 SSFront3.setSensor(this.posRow - 1, this.posCol - 1, DIRECTION.SOUTH);
                 SSLeft1.setSensor(this.posRow - 1, this.posCol + 1, DIRECTION.EAST);
-                SSLeft2.setSensor(this.posRow, this.posCol + 1, DIRECTION.EAST);
+                SSLeft2.setSensor(this.posRow + 1, this.posCol + 1, DIRECTION.EAST);
                 SLRight.setSensor(this.posRow - 1, this.posCol - 1, DIRECTION.WEST);
                 break;
             case WEST:
@@ -253,7 +253,7 @@ public class Robot{
                 SSFront2.setSensor(this.posRow, this.posCol - 1, DIRECTION.WEST);
                 SSFront3.setSensor(this.posRow + 1, this.posCol - 1, DIRECTION.WEST);
                 SSLeft1.setSensor(this.posRow - 1, this.posCol - 1, DIRECTION.SOUTH);
-                SSLeft2.setSensor(this.posRow - 1, this.posCol, DIRECTION.SOUTH);
+                SSLeft2.setSensor(this.posRow - 1, this.posCol + 1, DIRECTION.SOUTH);
                 SLRight.setSensor(this.posRow + 1, this.posCol - 1, DIRECTION.NORTH);
                 break;
         }
