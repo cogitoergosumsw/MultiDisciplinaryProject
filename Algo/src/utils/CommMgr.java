@@ -57,7 +57,7 @@ public class CommMgr {
             int PORT = 12317;
 //        	String HOST = "127.0.0.1";
 //        	int PORT = 10010;
-        	
+//        	
             conn = new Socket(HOST, PORT);
             System.out.println("connected...");
             

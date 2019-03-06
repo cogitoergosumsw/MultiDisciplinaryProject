@@ -307,10 +307,10 @@ public class Robot{
             }
      
             
-            //debug
-            for (int i=0;i<6;i++){
-            	System.out.println(result[i]);
-            }
+//            //debug
+//            for (int i=0;i<6;i++){
+//            	System.out.println(result[i]);
+//            }
            
             
             

@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import map.Map;
 import map.Cell;
@@ -70,33 +71,47 @@ public class Simulator{
     	if (realRun)
     		realRunConnection();
 
+
     	
     }   	
 
     //TODO
     private static void realRunConnection() {
     	String msg; 
-    	
-    	
+    				
 		msg = comm.recvMsg();
-
-		while (!msg.equals(CommMgr.EX_START)){
-			msg = comm.recvMsg();
-		}
 		
-		if (msg.equals(CommMgr.EX_START)){  		
+		
+		
+		
+//
+		
+		while (!msg.contains(CommMgr.EX_START)){
+			
+			if (msg.contains(CommMgr.EX_START)){  		
+				break ;         
+			}
+
+			
+			msg = comm.recvMsg();
+			
+		}
+			
+//		}
+//		
+		if (msg.contains(CommMgr.EX_START)){  		
 				new Exploration().execute();           
     	}
-//	    
-//	    if (msg.equals(CommMgr.FP_START)){	
+   
+//	    if (msg.contains(CommMgr.FP_START)){	
 //	    		new FastestPath().execute();
 //	    }
 //	    	
-//	    if (msg.equals(CommMgr.TIME_EX_START)){	
+//	    if (msg.contains(CommMgr.TIME_EX_START)){	
 //	    		new TimeExploration().execute();
 //	    }
 //	    	
-//	    if (msg.equals(CommMgr.COVERAGE_EX_START)){	
+//	    if (msg.contains(CommMgr.COVERAGE_EX_START)){	
 //	    		new CoverageExploration().execute();
 //	    }
 	    	
