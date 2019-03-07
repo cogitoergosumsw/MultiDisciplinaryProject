@@ -277,24 +277,23 @@ public class Robot{
     /**
      * @return an array of 6 elements for the 6 sensors. 1 = obstacle in front detected, -1 = no obstacle detected by the sensor
      * */
-    public int[] sense(Map explorationMap, Map realMap) {
+    public int[] sense(Map exploredMap, Map realMap) {
         int[] result = new int[6];
 
         if (!realBot) {
-            result[0] = SSFront1.sense(explorationMap, realMap);
-            result[1] = SSFront2.sense(explorationMap, realMap);
-            result[2] = SSFront3.sense(explorationMap, realMap);
-            result[3] = SSLeft1.sense(explorationMap, realMap);
-            result[4] = SSLeft2.sense(explorationMap, realMap);
-            result[5] = SLRight.sense(explorationMap, realMap);
+            result[0] = SSFront1.sense(exploredMap, realMap);
+            result[1] = SSFront2.sense(exploredMap, realMap);
+            result[2] = SSFront3.sense(exploredMap, realMap);
+            result[3] = SSLeft1.sense(exploredMap, realMap);
+            result[4] = SSLeft2.sense(exploredMap, realMap);
+            result[5] = SLRight.sense(exploredMap, realMap);
         } else {
            
-        	//debug
-        	//System.out.println("debug: inside sense");
-        	
+    	
         	CommMgr comm = CommMgr.getCommMgr();
             String msg = comm.recvMsg();
             while (!msg.contains(CommMgr.SENSOR_DATA)){msg = comm.recvMsg();}
+            
             String[] msgArr = msg.split("\\|");
             String[] readings = msgArr[1].split(",");
             
@@ -316,24 +315,23 @@ public class Robot{
            
             
             
-            SSFront1.senseReal(explorationMap, result[0]);
-            SSFront2.senseReal(explorationMap, result[1]);
-            SSFront3.senseReal(explorationMap, result[2]);
-            SSLeft1.senseReal(explorationMap, result[3]);
-            SSLeft2.senseReal(explorationMap, result[4]);
-            SLRight.senseReal(explorationMap, result[5]);
+            SSFront1.senseReal(exploredMap, result[0]);
+            SSFront2.senseReal(exploredMap, result[1]);
+            SSFront3.senseReal(exploredMap, result[2]);
+            SSLeft1.senseReal(exploredMap, result[3]);
+            SSLeft2.senseReal(exploredMap, result[4]);
+            SLRight.senseReal(exploredMap, result[5]);
 
             
             
             
             
-            String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
-            //debug
-            
-//            System.out.println(mapStrings[0]);
-//            System.out.println(mapStrings[1]);
-            
-            
+            String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+            //debug               
+//            System.out.println("EXPLORE|"+mapStrings[0]);
+//            System.out.println("OBSTACLE|"+mapStrings[1]);
+//            
+//            
             
             // TODO ???? send here ????
             comm.sendMsg(mapStrings[0], CommMgr.MAP_STRING1);

@@ -25,7 +25,7 @@ public class CommMgr {
     public static final String MAP_STRING1 ="EXPLORED_DATA"; // PC --> Arduino
     public static final String MAP_STRING2 = "OBSTACLE_DATA"; // PC --> Arduino
     public static final String SENSOR_DATA = "SENSOR_DATA";       // Arduino --> PC
-    public static final String WAYPOINT_DATA = "WAYPOINT_DATA"; // // Arduino --> PC
+    public static final String WAYPOINT_DATA = "WP"; // // Arduino --> PC
 
     public static final String MOVE = "MOVE";
     
@@ -101,7 +101,7 @@ public class CommMgr {
     }
 
     public void sendMsg(String msg, String msgType) {
-        System.out.println("Sending a message...");
+        //System.out.println("Sending a message...");
         try {
             String outputMsg;
             if (msg == null) {
@@ -127,7 +127,7 @@ public class CommMgr {
     
     
     public String recvMsg() {
-        System.out.println("\nReceiving a message...");
+        System.out.println("Receiving a message...");
 
         try {
             StringBuilder sb = new StringBuilder();
@@ -135,7 +135,7 @@ public class CommMgr {
 
             if (input != null && input.length() > 0) {
                 sb.append(input);
-                System.out.println(sb.toString());
+                System.out.println(sb.toString() + "\n");
                 return sb.toString();
             }
         } catch (IOException e) {

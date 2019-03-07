@@ -37,7 +37,8 @@ public class Simulator{
     private static JFrame mainFrame;
     private static JPanel mapPanel, buttonPanel, textPanel;
     public static JTextArea textArea;
-    private static boolean realRun = false;
+    public static boolean realRun = true;
+//    public static boolean realRun = false;
     private static Robot bot;
     private static Map exploredMap = null;
     private static Map realMap = null;
@@ -48,7 +49,7 @@ public class Simulator{
     private static int timeLimit = 3600;            
     private static int coverageLimit = 300;  
     
-    private static SwingWorker thread_exploration;
+//    private static SwingWorker thread_exploration;
     
     
     public static void main(String[] args){
@@ -68,10 +69,19 @@ public class Simulator{
     	
     	createSimulator();
     	
+    	
+    	 String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+         //debug               
+         System.out.println("EXPLORE|"+mapStrings[0]);
+         System.out.println("OBSTACLE|"+mapStrings[1]);
+         
+    	
+    	
     	if (realRun)
     		realRunConnection();
-
-
+    	
+    	
+    	
     	
     }   	
 
@@ -83,8 +93,14 @@ public class Simulator{
 		
 		while (!msg.contains(CommMgr.EX_START)){	
 			if (msg.contains(CommMgr.EX_START)){  		
-				break ;         
+				break;         
 			}
+			
+			if (msg.contains(CommMgr.WAYPOINT_DATA)){
+				setWayPoint(msg);
+			}
+			
+			
 			msg = comm.recvMsg();		
 		}
 		
@@ -112,6 +128,8 @@ public class Simulator{
 	    	
 
 }
+
+
 
 
 	private static void createSimulator(){
@@ -168,8 +186,34 @@ public class Simulator{
         }        
     }
 
+	private static void setWayPoint(String msg) {
+		
 
+		String[] msgArr = msg.split("\\|");
+        String[] data = msgArr[1].split(",");
+        
+        int row = Integer.parseInt(data[0].replaceAll("\\p{Punct}", ""));
+        int col = Integer.parseInt(data[1].replaceAll("\\p{Punct}", ""));
+        exploredMap.grid[row][col].setIsWayPoint();
+               
+        wayPoint = new Cell(row, col);
+       
+        CardLayout cl = ((CardLayout) mapPanel.getLayout());
+     	cl.show(mapPanel, "EXPLORED_MAP");
+     	exploredMap.repaint(); 
+	}
     
+	private static void setWayPoint(int row, int col) {
+	
+		exploredMap.grid[row][col].setIsWayPoint();
+               
+        wayPoint = new Cell(row, col);
+       
+        CardLayout cl = ((CardLayout) mapPanel.getLayout());
+     	cl.show(mapPanel, "EXPLORED_MAP");
+     	exploredMap.repaint(); 
+	}
+	
     /**
      * 
      * */
@@ -188,101 +232,39 @@ public class Simulator{
             
         
     }
-    
-	private static void addButton_wayPoint() {
-		JButton btn_wayPoint = new JButton("Set Way Point");
 
-		btn_wayPoint.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
+    private static void addButton_wayPoint() {
+    	JButton btn_wayPoint= new JButton("Set Way Point");	
+		
+    	btn_wayPoint.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                final JDialog wayPointDialog = new JDialog(mainFrame, "Set Way Point", true);
+                wayPointDialog.setSize(400, 60);
+                wayPointDialog.setLayout(new FlowLayout());
+                final JTextField wayPointTF = new JTextField(5);
+                JButton saveButton = new JButton("OK");
 
-				double row;
-				double col;
-				final double s_row;
-				final double s_col;
-				System.out.println("Initialized row and col");
+                saveButton.addMouseListener(new MouseAdapter() {
+                    public void mousePressed(MouseEvent e) {
+                        wayPointDialog.setVisible(false);
+                        String wp = wayPointTF.getText();
+                        String[] wpArry = wp.split(",");
+                        int row = Integer.parseInt(wpArry[0]);
+                        int col = Integer.parseInt(wpArry[1]);
+                        setWayPoint(row, col);
+                    }
+                });
 
-				s_col = mapPanel.getWidth();
-				s_row = mapPanel.getHeight();
-
-				/*
-				 * System.out.println(s_row); System.out.println(s_col);
-				 */
-
-				mapPanel.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent e) {
-						System.out.println("mouse is pressed");
-
-						double mousex, mousey;
-						mousex = e.getX();
-						mousey = e.getY();
-
-						double min_width, max_width, min_height, max_height;
-
-						min_width = 120;
-						max_width = 0.89 * s_col;
-						min_height = 0.05 * s_row;
-						max_height = 0.98 * s_row;
-
-						double mousex2, mousey2;
-
-						mousex2 = mousex - min_width;
-						mousey2 = mousey - min_height;
-
-						int sub_row = Constants.MAP_ROW - (int) Math.ceil(mousex2 / 30); // if GraphicsConstants.CELL_SIZE change, this is
-																		// change
-						int sub_col = Constants.MAP_COL - (int) Math.ceil(mousey2 / 30);
-
-						System.out.println(sub_row);
-						System.out.println(sub_col);
-
-						wayPoint = new Cell(sub_row, sub_col);
-						if (exploredMap.grid[sub_row][sub_col].getIsWayPoint()) {
-							System.out.println(exploredMap.grid[sub_row][sub_col].getIsWayPoint());
-							exploredMap.grid[sub_row][sub_col].setIsNotWayPoint();
-							System.out.println("set is not a way point");
-						} else {
-							exploredMap.grid[sub_row][sub_col].setIsWayPoint();
-							System.out.println("set as a way point");
-
-						}
-
-//                final JDialog wayPointDialog = new JDialog(mainFrame, "Set Way Point", true);
-//                wayPointDialog.setSize(400, 60);
-//                wayPointDialog.setLayout(new FlowLayout());
-//                final JTextField wayPointTF = new JTextField(5);
-//                JButton saveButton = new JButton("OK");
-//
-//                saveButton.addMouseListener(new MouseAdapter() {
-//                    public void mousePressed(MouseEvent e) {
-//                        wayPointDialog.setVisible(false);
-//                        String wp = wayPointTF.getText();
-//                        String[] wpArry = wp.split(",");
-//                        int row = Integer.parseInt(wpArry[0]);
-//                        int col = Integer.parseInt(wpArry[1]);
-//                        wayPoint = new Cell(row, col);    
-//                        exploredMap.grid[row][col].setIsWayPoint();
-//                        
-//                        CardLayout cl = ((CardLayout) mapPanel.getLayout());
-//                        cl.show(mapPanel, "EXPLORED_MAP");
-//                    	exploredMap.repaint();
-//                    }
-//                });
-//
-//                wayPointDialog.add(new JLabel("way point ( row,col E.g. 1,3 ) : "));
-//                wayPointDialog.add(wayPointTF);
-//                wayPointDialog.add(saveButton);
-//                wayPointDialog.setVisible(true);
-					}
-				});
-
-			}
-		});
-
-		buttonPanel.add(btn_wayPoint);
+                wayPointDialog.add(new JLabel("way point ( row,col E.g. 1,3 ) : "));
+                wayPointDialog.add(wayPointTF);
+                wayPointDialog.add(saveButton);
+                wayPointDialog.setVisible(true);
+            }
+        });
+        buttonPanel.add(btn_wayPoint);	
 	}
-
-
-	private static void addButton_coverageLimited() {
+	
+    private static void addButton_coverageLimited() {
     	JButton btn_coverageLimited = new JButton("Coverage Limited Exploration");
         	
     	btn_coverageLimited.addMouseListener(new MouseAdapter() {
@@ -314,6 +296,7 @@ public class Simulator{
 	}
 
 
+	
 	private static void addButton_timeLimited() {
 		JButton btn_timeLimited = new JButton("Time Limited Exploration");	
 		
@@ -348,6 +331,7 @@ public class Simulator{
         buttonPanel.add(btn_timeLimited);	
 	}
 
+	
 	private static void addButton_loadMap(){
     	JButton btn_loadMap = new JButton("Load Map");
         // button for add map 
@@ -394,51 +378,7 @@ public class Simulator{
     	buttonPanel.add(btn_exploration);
        
     }
-    
-    
-    
-//    
-//    static class ExplorationTask extends Task<Integer> {
-//        @Override
-//        protected Integer call() throws Exception {
-//    
-//        	
-//        	System.out.println("hello \n\n");
-//        	bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
-//            exploredMap.repaint();
-//
-//            ExplorationAlgo exploration;
-//            exploration = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
-//
-//            if (realRun) {
-//                CommMgr.getCommMgr().sendMsg(null, CommMgr.BOT_START);
-//            }
-//
-//            exploration.runExploration();
-//            generateMapDescriptor(exploredMap);
-//
-//            if (realRun) {
-//            	//TODO 
-//                // figure this out later 
-//            	//new FastestPath().execute();
-//            }
-//    
-//        	return 1;
-//        }
-//    }
-//    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
     private static void addButton_fastestPath(){
     	JButton btn_fastestPath = new JButton("Fastest Path");
 
@@ -451,11 +391,11 @@ public class Simulator{
         });
     	buttonPanel.add(btn_fastestPath);
     }
-    
-    
+     
     /**
      * ???
      * */
+    //TODO
     private static void addButton_reset(){
         JButton btn_reset = new JButton("Reset");
         btn_reset.addMouseListener(new MouseAdapter(){
@@ -470,8 +410,8 @@ public class Simulator{
         });
         buttonPanel.add(btn_reset);
     }
+   
     
-
     /**
      *  Fastest path Class for Multi-threading
      */
@@ -541,17 +481,16 @@ public class Simulator{
             ExplorationAlgo exploration;
             exploration = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
 
-            if (realRun) {
-                CommMgr.getCommMgr().sendMsg(CommMgr.BOT_START);
-            }
+//            if (realRun) {
+//                CommMgr.getCommMgr().sendMsg(CommMgr.BOT_START);
+//            }
             
             //debug
-            System.out.println("debug: inside Exploration.....");
+            //System.out.println("debug: inside Exploration.....");
             
             exploration.runExploration();
             generateMapDescriptor(exploredMap);
-
-            
+     
             
             if (realRun) {
             	//TODO 
@@ -608,5 +547,4 @@ public class Simulator{
     }
 
 }
-
 

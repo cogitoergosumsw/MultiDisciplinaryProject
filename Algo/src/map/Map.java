@@ -27,13 +27,15 @@ public class Map extends JPanel{
                     grid[row][col].setIsVirtualWall();
             }
         }
+        
+        setAllUnexplored();
     }
     
     private boolean inStartZone(int row, int col) {
-        return (row >= 0 && row <= 2 && col >= 0 && col <= 2);
+        return (row >= Constants.START_ROW - 1 && row <= Constants.START_ROW + 1 && col >= Constants.START_COL - 1 && col <= Constants.START_COL + 1);
     }
     private boolean inGoalZone(int row, int col) {
-        return (row >=grid.length - 3  && row <= grid.length - 1 && col >= grid[0].length - 3 && col <= grid[0].length  - 1);
+    	return (row >= Constants.GOAL_ROW - 1 && row <= Constants.GOAL_ROW + 1 && col >= Constants.GOAL_COL - 1 && col <= Constants.GOAL_COL + 1);
     }
 
         /**
@@ -59,12 +61,12 @@ public class Map extends JPanel{
     }
 
     /**
-     * Sets all cells in the grid to an unexplored state except for the START & GOAL zone.
+     * Sets all cells in the grid to an unexplored state except for the START zone
      */
     public void setAllUnexplored() {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[0].length; col++) {
-                if (inStartZone(row, col) || inGoalZone(row, col)) {
+                if (inStartZone(row, col)) {
                     grid[row][col].setIsExplored();
                 } else {
                     grid[row][col].setIsNotExplored();
@@ -72,25 +74,6 @@ public class Map extends JPanel{
             }
         }
     }
-    
-    public void setObstableCells(int row, int col){
-        if (!inStartZone(row, col) && !inGoalZone(row, col)){
-            grid[row][col].setIsObstacle();
-            grid[row][col].setIsExplored(); // ???? should setIsExplored here ????
-
-            //set virtual walls around 4 sides of the obstable 
-            if (row >= 1) grid[row-1][col].setIsVirtualWall(); //set cell in front to be virtual wall
-            if (row <= grid.length-2) grid[row+1][col].setIsVirtualWall(); //set cell behind to be virtual wall
-            if (col >= 1) grid[row][col - 1].setIsVirtualWall(); //set cell on the left to be virtual wall
-            // set virtual walls around the corners of the obstable
-            if (col <= grid[0].length - 2) grid[row][col + 1].setIsVirtualWall(); 
-            if (row >= 1 && col >= 1) grid[row - 1][col - 1].setIsVirtualWall(); 
-            if (row >= 1 && col <= grid[0].length-2) grid[row - 1][col + 1].setIsVirtualWall(); 
-            if (row <= grid.length-2 && col >= 1) grid[row + 1][col - 1].setIsVirtualWall(); 
-            if (row <= grid.length-2 && col <= grid[0].length-2) grid[row + 1][col + 1].setIsVirtualWall(); 
-        }
-    }
-    
     
     public void setObstacleCell(int row, int col) {
         if (inStartZone(row, col) || inGoalZone(row, col))
@@ -131,47 +114,38 @@ public class Map extends JPanel{
         }
     }
     
-    public void clearObstacleCell(int row, int col) {
-        if (inStartZone(row, col) || inGoalZone(row, col))
-            return;
+    public void clearObstacleCell(int row, int col){
 
         grid[row][col].setIsNotObstacle();
 
-        if (row >= 1) {
-            grid[row - 1][col].setIsNotVirtualWall();            // bottom cell
-
-            if (col < Constants.MAP_COL - 1) {
-                grid[row - 1][col + 1].setIsNotVirtualWall();    // bottom-right cell
-            }
-
-            if (col >= 1) {
-                grid[row - 1][col - 1].setIsNotVirtualWall();    // bottom-left cell
-            }
-        }
-
-        if (row < Constants.MAP_ROW - 1) {
-            grid[row + 1][col].setIsNotVirtualWall();            // top cell
-
-            if (col < Constants.MAP_COL - 1) {
-                grid[row + 1][col + 1].setIsNotVirtualWall();    // top-right cell
-            }
-
-            if (col >= 1) {
-                grid[row + 1][col - 1].setIsNotVirtualWall();    // top-left cell
-            }
-        }
-
-        if (col >= 1) {
-            grid[row][col - 1].setIsNotVirtualWall();            // left cell
-        }
-
-        if (col < Constants.MAP_COL - 1) {
-            grid[row][col + 1].setIsNotVirtualWall();            // right cell
-        }
+        //clear virtual wall cells around the obstacle, if it is valid and at the edge of the arena
+        
+        if (!isVirtualWallAroundEdge(row - 1 , col) && checkValidCoordinates(row - 1 , col))
+        	grid[row - 1][col].setIsNotVirtualWall(); 
+        if (!isVirtualWallAroundEdge(row + 1, col) && checkValidCoordinates(row + 1, col))
+        	grid[row + 1][col].setIsNotVirtualWall(); 
+        if (!isVirtualWallAroundEdge(row, col - 1) && checkValidCoordinates(row, col - 1))
+        	grid[row][col - 1].setIsNotVirtualWall();             
+        if (!isVirtualWallAroundEdge(row, col + 1) && checkValidCoordinates(row, col + 1))
+        	grid[row][col + 1].setIsNotVirtualWall(); 
+        if (!isVirtualWallAroundEdge(row - 1, col - 1) && checkValidCoordinates(row - 1, col - 1))
+        	grid[row - 1][col - 1].setIsNotVirtualWall(); 
+        if (!isVirtualWallAroundEdge(row - 1, col + 1) && checkValidCoordinates(row - 1, col + 1))
+        	grid[row - 1][col + 1].setIsNotVirtualWall(); 
+        if (!isVirtualWallAroundEdge(row + 1, col - 1) && checkValidCoordinates(row + 1, col - 1))
+        	grid[row + 1][col - 1].setIsNotVirtualWall(); 
+        if (!isVirtualWallAroundEdge(row + 1, col + 1) && checkValidCoordinates(row + 1, col + 1))
+        	grid[row + 1][col + 1].setIsNotVirtualWall(); 
+    
+}
+    
+    public boolean isVirtualWallAroundEdge(int row, int col){
+    	if (row == 0 || row == Constants.MAP_ROW - 1) return true;
+    	
+    	if (col == 0 || col == Constants.MAP_COL - 1) return true;
+    	
+    	return false;
     }
-    
-   
-    
 
     /**
      * @Override JComponent's paintComponent() method. It paints square cells for the grid with the appropriate colors 
@@ -183,22 +157,22 @@ public class Map extends JPanel{
 
     public void paintCells(Graphics g){
         for (int row = 0; row < Constants.MAP_ROW; row++) {
-            for (int col = 0; col < Constants.MAP_COL; col++) {
-                
+            for (int col = 0; col < Constants.MAP_COL; col++) { 
                 Color cellColor;
+                
                 if (grid[row][col].getIsWayPoint())
                 	cellColor = GraphicsConstants.C_WAYPOINT;
-                else if (grid[row][col].getIsTrail())
-                	cellColor = GraphicsConstants.C_TRAIL;
                 else if (inStartZone(row, col))
                     cellColor = GraphicsConstants.C_START;
                 else if (inGoalZone(row, col))
                     cellColor = GraphicsConstants.C_GOAL;
-                else {
+               else {
                     if (!grid[row][col].getIsExplored())
                         cellColor = GraphicsConstants.C_UNEXPLORED;
                     else if (grid[row][col].getIsObstacle())
                         cellColor = GraphicsConstants.C_OBSTACLE;
+                    else if (grid[row][col].getIsVirtualWall())
+                    	cellColor = GraphicsConstants.C_VIRTUALWALL;
                     else
                         cellColor = GraphicsConstants.C_FREE;
                 }

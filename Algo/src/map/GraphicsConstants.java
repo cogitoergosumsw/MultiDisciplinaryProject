@@ -15,7 +15,9 @@ class GraphicsConstants {
     public static final Color C_WAYPOINT = Color.cyan;
     public static final Color C_ROBOT = Color.RED;
     public static final Color C_ROBOT_DIR = Color.WHITE;
-
+    public static final Color C_VIRTUALWALL = Color.YELLOW;
+    
+    
     public static final int ROBOT_W = 70;
     public static final int ROBOT_H = 70;
 
@@ -29,6 +31,8 @@ class GraphicsConstants {
 
     public static final int MAP_H = 600;
     public static final int MAP_X_OFFSET = 120;
+
+	
 
 	
 }

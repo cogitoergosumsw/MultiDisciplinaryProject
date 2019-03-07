@@ -71,7 +71,7 @@ public class ExplorationAlgo {
 //        }
     	
     	//debug
-    	System.out.println("debug: inside runExploration\n");
+    	//System.out.println("debug: inside runExploration\n");
     	
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);
@@ -81,10 +81,18 @@ public class ExplorationAlgo {
         }
         
         bot.setSensors();
+        
+        
+        ////// debug //////  discard one message 
+//        CommMgr commMgr = CommMgr.getCommMgr();
+//        String extraMsg = commMgr.recvMsg();
+//        System.out.print("___________extra messsage: " + extraMsg);
+//        ////// debug //////
+     
         bot.sense(exploredMap, realMap);
         exploredMap.repaint();
 
-        areaExplored = exploredMap.calculateAreaExplored();
+        areaExplored = exploredMap.calculateAreaExplored();  
         System.out.println("Explored Area: " + areaExplored);
 
         explorationLoop(bot.getRobotPosRow(), bot.getRobotPosCol());

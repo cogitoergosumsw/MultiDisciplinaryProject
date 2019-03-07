@@ -1,7 +1,9 @@
 package utils;
 
 import map.Map;
+import robot.Robot;
 import simulator.Constants;
+import simulator.Simulator;
 
 import java.io.*;
 
@@ -57,6 +59,7 @@ public class MapDescriptor {
     /**
      * Generates Part 1 & Part 2 map descriptor strings from the passed Map object.
      */
+    
     public static String[] generateMapDescriptor(Map map) {
         String[] ret = new String[2];
 
@@ -78,30 +81,35 @@ public class MapDescriptor {
         }
         Part1_bin.append("11");
         Part1.append(binToHex(Part1_bin.toString()));
-        System.out.println("EXPLORED_DATA|" + Part1.toString());
+        
         ret[0] = Part1.toString();
-
+        
         StringBuilder Part2 = new StringBuilder();
         StringBuilder Part2_bin = new StringBuilder();
         for (int r = 0; r < Constants.MAP_ROW; r++) {
             for (int c = 0; c < Constants.MAP_COL; c++) {
-                
-                if (map.getCell(r, c).getIsObstacle())
-                    Part2_bin.append("1");
-                else
-                    Part2_bin.append("0");
+                if (map.getCell(r, c).getIsExplored()) {
+                    if (map.getCell(r, c).getIsObstacle())
+                        Part2_bin.append("1");
+                    else
+                        Part2_bin.append("0");
 
-                if (Part2_bin.length() == 4) {
-                    Part2.append(binToHex(Part2_bin.toString()));
-                    Part2_bin.setLength(0);
+                    if (Part2_bin.length() == 4) {
+                        Part2.append(binToHex(Part2_bin.toString()));
+                        Part2_bin.setLength(0);
+                    }
                 }
-                
             }
         }
+        
         if (Part2_bin.length() > 0) Part2.append(binToHex(Part2_bin.toString()));
-        System.out.println("OBSTACLE_DATA|" + Part2.toString());
         ret[1] = Part2.toString();
-
+        
+         if (!Simulator.realRun) {        
+        	System.out.println("EXPLORED_DATA" + Part1.toString());
+        	System.out.println("OBSTACLE_DATA|" + Part2.toString());
+        }
+        
         return ret;
     }
 }
