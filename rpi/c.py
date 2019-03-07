@@ -14,6 +14,8 @@ class Camera:
         camera = PiCamera()
         camera.resolution = (320,240)
         camera.framerate = 50
+        camera.rotation = 180
+        camera.video_stabilization = True
         self.camera = camera
         self.rawCapture = PiRGBArray(camera, size=(320, 240))
         # allow the camera to warmup
@@ -34,7 +36,7 @@ class Camera:
         
         angle = round(math.degrees(math.acos((line1**2 + line2**2 - hypo**2)/(2*line1*line2))),1)
         
-        if (89<=angle<=91):
+        if (88<=angle<=92):
                 return True
         else:
                 return False
@@ -91,17 +93,17 @@ class Camera:
                         message=""
                         if (rl>ud):
                                 if self.checkangle(image,extTop,extBot,extRight):
-                                        message = 'AL:'
+                                        message = 'AL|'
                                 if self.checkangle(image,extBot,extTop,extLeft):  
-                                        message ="AR:"
+                                        message ="AR|"
                         else:
                                 if self.checkangle(image,extLeft,extRight,extBot):  
-                                        message = "AD:"
+                                        message = "AD|"
                                 if self.checkangle(image,extRight,extLeft,extTop):
-                                        message = "AU:"
+                                        message = "AU|"
                                 
                         if (len(message)>0):
-                                message = message+str(area/1000)
+                                message = message+str(area/1000)+(';')
                                 print message
                                 cameraqueue.put(message)
                                 cv2.putText(image, "arrow", (x, y), font, 2, (0, 0, 255))

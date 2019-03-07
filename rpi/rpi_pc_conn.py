@@ -44,7 +44,6 @@ class TCPConnection:
     def tcp_write(self, message):
         try:
             self.sock.send(message.encode())
-            print "Message sent from server to algorithim: %s" % message
         except Exception as e:
             print("Error sending data to PC || Error: %s" % e)
 
@@ -52,13 +51,12 @@ class TCPConnection:
         temp = ' '
         msg_read = ''
         while True:
-            temp = self.sock.recv(1024)
+            temp = self.sock.recv(4096)
             if (temp == ""):
                 self.tcp_close()
                 break
             temp = temp.decode()
             msg_read = msg_read + temp
-            print("Message read from TCP connection: %s" % msg_read)
             return msg_read
 
     def tcp_close(self):
