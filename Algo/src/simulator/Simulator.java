@@ -44,8 +44,8 @@ public class Simulator{
     private static Map realMap = null;
     private static final CommMgr comm = CommMgr.getCommMgr();
     private static Cell wayPoint = null;
-    
-    
+    public static boolean explorationDone = false;
+    public static boolean fastestPathDone = false;
     private static int timeLimit = 3600;            
     private static int coverageLimit = 300;  
     
@@ -91,23 +91,50 @@ public class Simulator{
     				
 		msg = comm.recvMsg();
 		
-		while (!msg.contains(CommMgr.EX_START)){	
+
+		if (!explorationDone){
+			while (!msg.contains(CommMgr.EX_START)){	
+				if (msg.contains(CommMgr.EX_START)){  		
+					break;         
+				}
+				
+				if (msg.contains(CommMgr.WAYPOINT_DATA)){
+					setWayPoint(msg);
+				}	
+				msg = comm.recvMsg();		
+			}
+			
 			if (msg.contains(CommMgr.EX_START)){  		
-				break;         
-			}
-			
-			if (msg.contains(CommMgr.WAYPOINT_DATA)){
-				setWayPoint(msg);
-			}
-			
-			
-			msg = comm.recvMsg();		
+					new Exploration().execute();   
+					
+				 //debug
+//				coverageLimit = 81;
+//				new CoverageExploration().execute();   
+//				
+	    	}	
 		}
 		
-		if (msg.contains(CommMgr.EX_START)){  		
-				new Exploration().execute();           
-    	}
+		System.out.println("explorationDone = "+ explorationDone);
 		
+		// hold main thread here during exploration 
+		while (!explorationDone){}
+		
+		if (!fastestPathDone){
+			while (!msg.contains(CommMgr.FP_START)){	
+				if (msg.contains(CommMgr.FP_START)){  		
+					break;         
+				}
+				
+				if (msg.contains(CommMgr.WAYPOINT_DATA)){
+					setWayPoint(msg);
+				}	
+				msg = comm.recvMsg();		
+			}
+			
+			if (msg.contains(CommMgr.FP_START)){  		
+					new FastestPath().execute();           
+	    	}	
+		}
 		
 		
 		
@@ -159,7 +186,6 @@ public class Simulator{
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
-        
     }
 
     
@@ -188,7 +214,14 @@ public class Simulator{
 
 	private static void setWayPoint(String msg) {
 		
+		// clear previously set way point if any 
+		for (int i = 0; i < Constants.GOAL_ROW; i++){
+			for (int j = 0; i < Constants.GOAL_COL; j ++){
+				exploredMap.grid[i][j].setIsNotWayPoint();
+			}
+		}
 
+		
 		String[] msgArr = msg.split("\\|");
         String[] data = msgArr[1].split(",");
         
@@ -420,8 +453,7 @@ public class Simulator{
         	
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
- 	
-        	
+ 		
         	bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
             exploredMap.repaint();
 

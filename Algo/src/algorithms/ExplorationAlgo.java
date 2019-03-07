@@ -3,6 +3,7 @@ package algorithms;
 import map.Cell;
 import map.Map;
 import simulator.Constants;
+import simulator.Simulator;
 import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
@@ -96,6 +97,11 @@ public class ExplorationAlgo {
         System.out.println("Explored Area: " + areaExplored);
 
         explorationLoop(bot.getRobotPosRow(), bot.getRobotPosCol());
+        
+        Simulator.explorationDone = true;
+        if (bot.getRealBot()) {
+            CommMgr.getCommMgr().sendMsg(CommMgr.EX_DONE);
+        }
     }
 
     /**
@@ -109,9 +115,16 @@ public class ExplorationAlgo {
      * @TODO move 3 steps if no obstacle in front 
      * */
     private void explorationLoop(int r, int c) {
-        do {
-
-        	nextMove(); 
+        int loopCount = 0;
+    	do {
+    		//TODO send calibration 
+        	if (bot.getRealBot() && loopCount % 5 == 0){
+        		moveBot(MOVEMENT.CALIBRATE);
+//        		CommMgr commMgr = CommMgr.getCommMgr();
+//                commMgr.sendMsg(Character.toString(MOVEMENT.print(MOVEMENT.CALIBRATE)), CommMgr.MOVE);
+        
+        	}
+    		nextMove(); 
             areaExplored = exploredMap.calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
             
@@ -119,13 +132,12 @@ public class ExplorationAlgo {
                 exploreUnexploredArea();
                 break;          	      
             }
+            loopCount ++ ; 
         } while (areaExplored < coverageLimit && System.currentTimeMillis() < endTime);
 
-       
+        
         goHome();
 
-        
-        
         
     }
     /**
@@ -323,9 +335,13 @@ public class ExplorationAlgo {
      * Returns the robot to START after exploration and points the bot northwards.
      */
     private void goHome() {
-        System.out.print(!bot.getTouchedGoal());
-        System.out.print(coverageLimit);
-        System.out.print(timeLimit);
+    	// debug
+    	System.out.println("going home");
+    	
+    	System.out.println(!bot.getTouchedGoal());
+       // debug
+    	System.out.println("coverage limit = " + coverageLimit);
+        System.out.println("time limit = "+timeLimit);
         
     	
     	if (!bot.getTouchedGoal() && coverageLimit == 300 && timeLimit == 3600) {
@@ -335,11 +351,11 @@ public class ExplorationAlgo {
             else 
             	 goToGoal = new FastestPathAlgo(exploredMap, realMap, bot); 
             
-            goToGoal.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);  
+            goToGoal.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);  
         } 
 
         FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot);   // ???? removed realMap from parameter
-        returnToStart.runFastestPath(RobotConstants.START_ROW, RobotConstants.START_COL);
+        returnToStart.runFastestPath(Constants.START_ROW, Constants.START_COL);
 
         System.out.println("Exploration complete!");
         areaExplored = exploredMap.calculateAreaExplored();
@@ -350,7 +366,7 @@ public class ExplorationAlgo {
         //TODO goHome realbot
 //        if (bot.getRealBot()) {
 //            turnBotDirection(DIRECTION.WEST);
-//            moveBot(MOVEMENT.CALIBRATE);
+            moveBot(MOVEMENT.CALIBRATE);
 //            turnBotDirection(DIRECTION.SOUTH);
 //            moveBot(MOVEMENT.CALIBRATE);
 //            turnBotDirection(DIRECTION.WEST);
@@ -391,10 +407,13 @@ public class ExplorationAlgo {
         exploredMap.repaint();
         if (m != MOVEMENT.CALIBRATE) {
             senseAndRepaint();
-        } else {
-            CommMgr commMgr = CommMgr.getCommMgr();
-            commMgr.recvMsg();
-        }
+        } 
+        // TODO NOWWW
+//            else {
+//            System.out.println("debug");
+//        	CommMgr commMgr = CommMgr.getCommMgr();
+//            commMgr.recvMsg();
+//        }
 
         // ???? calibration ????
         // TODO calibration 

@@ -87,8 +87,7 @@ public class FastestPathAlgo {
 		Stack<Cell> path;
 		do{
 			loopCount++;
-			
-			
+
 			curCell = minimumCostCell(goalRow, goalCol);
 			System.out.println("curCell = "+ curCell.getRow() + " , " + curCell.getCol());
 			
@@ -240,14 +239,17 @@ public class FastestPathAlgo {
 	}
 
 	private String executePath(Stack<Cell> path, int goalRow, int goalCol) {
-        StringBuilder outputString = new StringBuilder();
+        
+        
+        
+        tringBuilder outputString = new StringBuilder();
         ArrayList<MOVEMENT> movements = new ArrayList<>();
         DIRECTION targetDir;
         
         Robot tempBot = new Robot(bot.getRobotPosRow(),bot.getRobotPosCol(),false);
         tempBot.setRobotDir(bot.getRobotCurDir());
         
-
+        
         
         tempBot.setSpeed(0);
         MOVEMENT m;
@@ -258,7 +260,7 @@ public class FastestPathAlgo {
 		while((tempBot.getRobotPosRow() != goalRow) || (tempBot.getRobotPosCol() != goalCol)){
 			if (tempBot.getRobotPosRow() == temp.getRow() && tempBot.getRobotPosCol() == temp.getCol()) {
                 temp = path.pop();
-                System.out.println("pop cell " +temp.getRow() +"," +temp.getCol());
+                //System.out.println("pop cell " +temp.getRow() +"," +temp.getCol());
             }
 			
 			targetDir = getTargetDir(tempBot.getCell(), temp);

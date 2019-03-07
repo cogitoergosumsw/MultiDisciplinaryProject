@@ -14,10 +14,10 @@ public class CommMgr {
 
     public static final String EX_START = "EX_START";       // Android --> PC
     public static final String FP_START = "FP_START";       // Android --> PC
-    public static final String EX_DONE = "EXPLORE_DONE";			// PC --> Android
-    public static final String FP_DONE = "FASTEST_DONE";			// PC --> Android
-    public static final String TIME_EX_START = "TIME_EX_START";
-    public static final String COVERAGE_EX_START = "COVERAGE_EX_START";
+    public static final String EX_DONE = "EX_DONE";			// PC --> Android
+    public static final String FP_DONE = "FP_DONE";			// PC --> Android
+    public static final String TIME_EX_START = "TIME_START";
+    public static final String COVERAGE_EX_START = "COVERAGE_START";
     
     public static final String BOT_POS = "BOT_POS";         // PC --> Android
     public static final String BOT_START = "BOT_START";     // PC --> Arduino
@@ -54,7 +54,7 @@ public class CommMgr {
 
         try {
             String HOST = "192.168.18.18";
-            int PORT = 12317;
+            int PORT = 12318;
 //        	String HOST = "127.0.0.1";
 //        	int PORT = 10010;
         	
