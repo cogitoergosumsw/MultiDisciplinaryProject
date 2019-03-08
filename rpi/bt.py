@@ -1,5 +1,5 @@
 from bluetooth import *
-class btconnection:
+class btconnection():
 	def __init__(self):
 		server_sock = BluetoothSocket(RFCOMM)
 		server_sock.bind(("",PORT_ANY)) 

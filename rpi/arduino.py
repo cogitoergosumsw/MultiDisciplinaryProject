@@ -3,7 +3,7 @@ from threading import Thread
 #BAUD_RATE = 9600
 #SERIAL_PORT = '/dev/ttyACM0'
 
-class ArduinoSerialCon(Thread):
+class ArduinoSerialCon():
     def __init__(self):
         self.serial_connection = None
         self.serial_port = '/dev/ttyACM0'
@@ -11,7 +11,7 @@ class ArduinoSerialCon(Thread):
         
     def establish_con(self):
         try:
-            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=0)
+            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=2)
         except Exception as e:
             return False
         return True
@@ -51,12 +51,13 @@ class ArduinoSerialCon(Thread):
             self.close()
             return err_msg
             
-      
+"""
 if __name__ == "__main__":
         r = ArduinoSerialCon()
         r.establish_con()
         while True:
             data = r.read()
-            if (data):
-                print("Arduino Sensor data recieved was : %s AT " % (data))
+            print("Arduino Sensor data recieved was : %s AT " % (data))
+"""
+
 
