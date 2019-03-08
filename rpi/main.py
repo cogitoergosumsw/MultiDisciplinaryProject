@@ -9,6 +9,7 @@ from threading import Thread, current_thread
 import time
 import sys
 import os
+import re
 
 
 class mainthreading(Thread):
@@ -37,17 +38,17 @@ class mainthreading(Thread):
         print(current_thread(), 'Arduino read Thread')
         while True:
             data = self.arduino.read()
-            if (len(data) > 0):
+            if ("SENSOR_DATA" in data):
                 self.tcplist.append(data)
-                print("%s: Data from Arduino || Data: %s" % (time.ctime(), data))
+                print("Arduino Sensor data recieved was : %s AT %s" % (data,time.ctime()))
 
     def write_toardunio(self):
         print(current_thread(), 'Arduino write Thread')
         while True:
             if (len(self.arduinolist) > 0):
-                message = self.arduinolist.pop()
+                message = self.arduinolist.popleft()
                 self.arduino.send(message)
-                print("%s: Sending data to Arduino: %s" % (time.ctime(), message))
+                print("Arduino data sent was : %s AT %s" % (message,time.ctime()))
 
             if (self.placeholder.qsize() > 0):
                 print("?")
@@ -72,14 +73,26 @@ class mainthreading(Thread):
     # thread to read from bluetooth
     def read_frombluetooth(self):
         print(current_thread(), 'BT read Thread')
+        status = ''
+
         while (True):
             data = self.bt.listen_msg()
             try:
                 if (len(data) > 0):
-                    print("Data from bluetooth was: %s" % data)  # if bluetooth recieves msg
-                    self.tcplist.append(data)
-                    if (data == 'F' or data ==  'L' or data == 'R' and len(data) == 1):
-                        self.arduinolist.append(data)  # add to aurdino deque
+                    if ("SET_STATUS" in data):
+                            self_message = data.split('|')
+                            status = self_message[1][:-1]
+                    if ("GET_STATUS" in data):
+                            self_message = 'STATUS|'+status+';'
+                            self.btlist.append(self_message)
+                
+                    message = data.split(';')
+                    for subdata in message:
+                        if (len(subdata) > 0):
+                                #print (" Bluetooth data recieved was : %s AT %s"%(subdata,time.ctime()))
+                                self.tcplist.append(subdata)
+                                if (subdata == 'F' or subdata ==  'L' or subdata == 'R'  or subdata == 'CALIBRATE|'):
+                                        self.arduinolist.append(subdata)  # add to aurdino deque
 
             except Exception as e:
                 print("Exception reading BT %s" % e)
@@ -91,9 +104,9 @@ class mainthreading(Thread):
             while (True):
                 # insert data into bluetooth write queue here
                 if (len(self.btlist) > 0):  # if there is data from camera
-                    message = self.btlist.pop()
+                    message = self.btlist.popleft()
                     self.bt.send_msg(message)  # put it into the bluetooth queue
-                    print("%s: Sending to Bluetooth || Data: %s" % (time.ctime(), message))
+                    #print("Bluetooth data sent was: %s at %s" % (message,time.ctime()))
 
                 if (self.placeholder.qsize() > 0):
                     print("?")
@@ -109,10 +122,18 @@ class mainthreading(Thread):
             data = self.tcp.tcp_read()
             try:
                 if data != '':
-                    print("Data from TCP Connection: %s" % data)
-                    self.btlist.append(data)
-                    if (data == 'F' or data ==  'L' or data == 'R' and len(data) == 1):
-                        self.arduinolist.append(data)
+                    #print("Algorithim data recieved was: %s AT %s" % (data,time.ctime()))
+                    messages = data.split(";")
+                    for message in messages:
+                        if (len(message) > 1):
+                                if ("BOT_START" in message):
+                                        self.arduinolist.append('s')
+                                if ("MOVE|" in message):
+                                        message = message.split('|')
+                                        message = message[1]
+                                        self.arduinolist.append(message)
+                                else:
+                                        self.btlist.append(message+';')
             except KeyboardInterrupt:
                     self.tcp.close()
                     print "TCP killed"
@@ -132,9 +153,9 @@ class mainthreading(Thread):
         while True:
             try:
                 if len(self.tcplist) > 0:  # if there is data for PC
-                    message = self.tcplist.pop()
-                    self.tcp.tcp_write(message)  # send message to PC
-                    print("Sending message to PC || Data: %s" % message)
+                    message = self.tcplist.popleft()
+                    self.tcp.tcp_write(message+';\n')  # send message to PC
+                    #print("Algorithim data sent was: %s AT %s" % (message,time.ctime()))
 
             except KeyboardInterrupt:
                 if self.tcp:
@@ -190,77 +211,77 @@ class mainthreading(Thread):
         
         #SUBSYSTEM CONNECTION BLOCK
         establish_tcp_t = Thread(target=self.establish_tcp)
-        #establish_ard_t = Thread(target=self.establish_ard)
+        establish_ard_t = Thread(target=self.establish_ard)
         establish_bluetooth_t = Thread(target=self.establish_bluetooth)
-        c = Process(target=self.startcamera)
+        #c = Process(target=self.startcamera)
         
         #LISTENING THREADS
         listen_bluetooth_t = Thread(target=self.read_frombluetooth)
         listen_tcp_t = Thread(target=self.read_fromtcpconnection)
-        listen_camera = Thread(target=self.listen_tocamera)
-        #listen_arduino_t = Thread(target=self.read_fromardunio)
+        #listen_camera = Thread(target=self.listen_tocamera)
+        listen_arduino_t = Thread(target=self.read_fromardunio)
         
         #WRITING THREADS
         write_bluetooth_t = Thread(target=self.write_tobluetooth)
         write_tcp_t = Thread(target=self.write_totcpconnection)
-        #write_ard_t = Thread(target=self.write_toardunio)
+        write_ard_t = Thread(target=self.write_toardunio)
         
         #WRITING DAEMONS
         write_bluetooth_t.setDaemon(True)
         write_tcp_t.setDaemon(True)
-        #write_ard_t.setDaemon(True)
+        write_ard_t.setDaemon(True)
         
         
         #LISTENING DAEMONS
         listen_bluetooth_t.setDaemon(True)
         listen_tcp_t.setDaemon(True)
-        listen_camera.setDaemon(True)
-        #listen_arduino_t.setDaemon(True)
+        #listen_camera.setDaemon(True)
+        listen_arduino_t.setDaemon(True)
     
         
         #SUBSYSTEM DAEMON THREAD
         establish_tcp_t.setDaemon(True)
-        #establish_ard_t.setDaemon(True)
+        establish_ard_t.setDaemon(True)
         establish_bluetooth_t.setDaemon(True)
-        c.daemon = True
+        #c.daemon = True
         
         
         #SUBSYSTEM STARTING THREADS
         establish_tcp_t.start()
-        #establish_ard_t.start()
+        establish_ard_t.start()
         establish_bluetooth_t.start()
-        c.start()
+        #c.start()
         
         #SUBSYSTEM JOINING THREADS
         establish_tcp_t.join()
-        #establish_ard_t.join()
+        establish_ard_t.join()
         establish_bluetooth_t.join()
         
                 
         #LISTENING STARTING THREADS
         listen_bluetooth_t.start()
         listen_tcp_t.start()
-        listen_camera.start()
-        #listen_arduino_t.start()
+        #listen_camera.start()
+        listen_arduino_t.start()
         
         #WRITING STARTING THREADS
         write_bluetooth_t.start()
         write_tcp_t.start()
-        #write_ard_t.start()
+        write_ard_t.start()
         
         #LISTENING JOIN THREADS
         listen_bluetooth_t.join()
         listen_tcp_t.join()
-        listen_camera.join()
-        #listen_arduino_t.join()
+        #listen_camera.join()
+        listen_arduino_t.join()
         
-        #WRITING JOIN THREADS
+        #WRITING JOIN THREADSa
         write_bluetooth_t.join()
         write_tcp_t.join()
-        #write_ard_t.join()
+        write_ard_t.join()
 
         #CAMERA PROCESS TO RUN TILL THE END
-        c.join()
+        #c.join()
 
         
 

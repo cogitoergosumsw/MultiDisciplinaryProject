@@ -67,20 +67,45 @@ public class RequestHandler extends Thread {
 	public void sendReadings() {
 		String msg = "SENSOR_DATA|0,0,0,1,1,0;";
 		send(msg);
-		msg = "SENSOR_DATA|2,2,2,1,1,0;";
-		send(msg);
 		send(msg);	
 		send(msg);
-		send(msg);	
-		send(msg);	
-		send(msg);	
-		send(msg);	
-		
-		msg = "SENSOR_DATA|1,1,1,1,1,0;";
-		send(msg);	
-		
+		send(msg);
+		send("SENSOR_DATA|3,3,3,1,1,0;");	
+		send("SENSOR_DATA|2,2,2,1,1,0;");	
+		send("SENSOR_DATA|1,1,1,1,1,0;");	
+		send("SENSOR_DATA|0,0,0,1,1,0;");
+		send("SENSOR_DATA|0,0,0,1,1,0;");
+	
+		send("SENSOR_DATA|3,3,3,2,2,0;");	
+		send("SENSOR_DATA|2,2,2,1,1,0;");	
+		send("SENSOR_DATA|1,1,1,1,1,0;");	
 
-
+		send("SENSOR_DATA|0,0,0,1,1,0;");
+		send("SENSOR_DATA|0,0,0,1,1,0;");
+		send("SENSOR_DATA|0,0,0,1,1,0;");
+		send("SENSOR_DATA|0,0,0,1,1,0;");
+		send("SENSOR_DATA|3,3,3,1,1,0;");	
+		send("SENSOR_DATA|2,2,2,1,1,0;");	
+		send("SENSOR_DATA|1,1,1,1,1,0;");
+		
+		String message = receive();
+		
+		while (!message.contains("EX_DONE;" )){
+			
+			message = receive();
+			
+		}
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		send("FP_START");
+		
+		
 		
 		
 	}

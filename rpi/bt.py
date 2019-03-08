@@ -32,10 +32,8 @@ class btconnection:
 	
 	def listen_msg(self):
 		while True:
-			print ("Listening...")
 			client_sock = self.client_sock
-			data = client_sock.recv(1024)
-			print("Received [%s]" %data)
+			data = client_sock.recv(2048)
 			return data
 			
 	def disconnect(self):

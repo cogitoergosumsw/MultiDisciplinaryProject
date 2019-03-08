@@ -162,6 +162,8 @@ public class Map extends JPanel{
                 
                 if (grid[row][col].getIsWayPoint())
                 	cellColor = GraphicsConstants.C_WAYPOINT;
+                else if (grid[row][col].getIsTrail())
+                	cellColor = GraphicsConstants.C_TRAIL;
                 else if (inStartZone(row, col))
                     cellColor = GraphicsConstants.C_START;
                 else if (inGoalZone(row, col))

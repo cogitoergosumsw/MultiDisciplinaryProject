@@ -1,9 +1,9 @@
 import serial
-
+from threading import Thread
 #BAUD_RATE = 9600
 #SERIAL_PORT = '/dev/ttyACM0'
 
-class ArduinoSerialCon:
+class ArduinoSerialCon(Thread):
     def __init__(self):
         self.serial_connection = None
         self.serial_port = '/dev/ttyACM0'
@@ -11,7 +11,7 @@ class ArduinoSerialCon:
         
     def establish_con(self):
         try:
-            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=5)
+            self.serial_connection = serial.Serial(self.serial_port, self.baud_rate, timeout=0)
         except Exception as e:
             return False
         return True
@@ -34,7 +34,6 @@ class ArduinoSerialCon:
     def read(self):
         try:
             data = self.serial_connection.readline()
-            print("Receiving data from Arduino || Data: %s " % str(data))
             return data
         except Exception as e:
             err_msg = "Error receiving from Arduino || Error: %s" % e
@@ -46,9 +45,18 @@ class ArduinoSerialCon:
         try:
             payload = payload.rstrip().encode('utf-8')
             self.serial_connection.write(payload)
-            print("Sent data to Arduino || Data: %s " % str(payload))
         except Exception as e:
             err_msg = "Error sending data to Arduino || Error: %s" % e
             print(err_msg)
             self.close()
             return err_msg
+            
+      
+if __name__ == "__main__":
+        r = ArduinoSerialCon()
+        r.establish_con()
+        while True:
+            data = r.read()
+            if (data):
+                print("Arduino Sensor data recieved was : %s AT " % (data))
+

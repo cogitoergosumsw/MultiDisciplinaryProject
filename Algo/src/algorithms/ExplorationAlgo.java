@@ -98,7 +98,7 @@ public class ExplorationAlgo {
 
         explorationLoop(bot.getRobotPosRow(), bot.getRobotPosCol());
         
-        Simulator.explorationDone = true;
+        
         if (bot.getRealBot()) {
             CommMgr.getCommMgr().sendMsg(CommMgr.EX_DONE);
         }
@@ -115,27 +115,31 @@ public class ExplorationAlgo {
      * @TODO move 3 steps if no obstacle in front 
      * */
     private void explorationLoop(int r, int c) {
-        int loopCount = 0;
+        int loopCount = 1;
     	do {
     		//TODO send calibration 
-        	if (bot.getRealBot() && loopCount % 5 == 0){
-        		moveBot(MOVEMENT.CALIBRATE);
+//        	if (bot.getRealBot() && loopCount % 5 == 0){
+//        		moveBot(MOVEMENT.CALIBRATE);
 //        		CommMgr commMgr = CommMgr.getCommMgr();
 //                commMgr.sendMsg(Character.toString(MOVEMENT.print(MOVEMENT.CALIBRATE)), CommMgr.MOVE);
         
-        	}
+        	//}
     		nextMove(); 
             areaExplored = exploredMap.calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
             
-            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c && areaExplored != Constants.MAP_SIZE) {
-                exploreUnexploredArea();
+            
+            //TODO remove this , bot stops when it goes back to the starting zone
+            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c) {
+//                if (areaExplored != Constants.MAP_SIZE){
+//                	exploreUnexploredArea();
+//                }
                 break;          	      
             }
             loopCount ++ ; 
         } while (areaExplored < coverageLimit && System.currentTimeMillis() < endTime);
-
-        
+    	
+    	
         goHome();
 
         
@@ -143,7 +147,6 @@ public class ExplorationAlgo {
     /**
      * explore unexplored area by going to the nearest unexplored cell
      * move for 5 steps, then go to nearest unexplored cell again
-     * 
      * */
     
     private void exploreUnexploredArea(){
@@ -344,35 +347,35 @@ public class ExplorationAlgo {
         System.out.println("time limit = "+timeLimit);
         
     	
-    	if (!bot.getTouchedGoal() && coverageLimit == 300 && timeLimit == 3600) {
+    	if (!bot.getTouchedGoal() && coverageLimit == Constants.MAP_SIZE && timeLimit == 3600) {
     		FastestPathAlgo goToGoal;
-			if (bot.getRealBot()) 
-				goToGoal = new FastestPathAlgo(exploredMap, bot);     
-            else 
-            	 goToGoal = new FastestPathAlgo(exploredMap, realMap, bot); 
-            
+    		goToGoal = new FastestPathAlgo(exploredMap, realMap, bot); 
             goToGoal.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);  
+            
         } 
 
         FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot);   // ???? removed realMap from parameter
         returnToStart.runFastestPath(Constants.START_ROW, Constants.START_COL);
-
+        
         System.out.println("Exploration complete!");
         areaExplored = exploredMap.calculateAreaExplored();
-        System.out.printf("%.2f%% Coverage", (areaExplored / 300.0) * 100.0);
+        System.out.printf("%.2f%% Coverage", (areaExplored / Constants.MAP_SIZE) * 100.0);
         System.out.println(", " + areaExplored + " Cells");
         System.out.println((System.currentTimeMillis() - startTime) / 1000 + " Seconds");
 
-        //TODO goHome realbot
+        //TODO calibrate after going back to starting position     
 //        if (bot.getRealBot()) {
 //            turnBotDirection(DIRECTION.WEST);
-            moveBot(MOVEMENT.CALIBRATE);
+//            moveBot(MOVEMENT.CALIBRATE);
 //            turnBotDirection(DIRECTION.SOUTH);
 //            moveBot(MOVEMENT.CALIBRATE);
 //            turnBotDirection(DIRECTION.WEST);
 //            moveBot(MOVEMENT.CALIBRATE);
 //        }
-        turnBotDirection(DIRECTION.NORTH);
+       
+        
+        // TODO ??? change to checking if bot is facing north when starting fastest path
+       // turnBotDirection(DIRECTION.NORTH);
     }
 
     /**
@@ -517,7 +520,9 @@ public class ExplorationAlgo {
         }
     }
     
-    
-    
-    
 }
+    
+    
+    
+    
+

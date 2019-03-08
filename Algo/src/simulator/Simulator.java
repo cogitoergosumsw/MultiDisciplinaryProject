@@ -32,6 +32,7 @@ import algorithms.FastestPathAlgo;
 
 
 
+
 public class Simulator{
 
     private static JFrame mainFrame;
@@ -47,7 +48,7 @@ public class Simulator{
     public static boolean explorationDone = false;
     public static boolean fastestPathDone = false;
     private static int timeLimit = 3600;            
-    private static int coverageLimit = 300;  
+    private static int coverageLimit = Constants.MAP_SIZE;  
     
 //    private static SwingWorker thread_exploration;
     
@@ -57,7 +58,7 @@ public class Simulator{
     	if (realRun)
     		comm.openConnection();
     	
-    	bot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, realRun);
+    	bot = new Robot(Constants.START_ROW, Constants.START_COL, realRun);
 
     	if (!realRun) {
             realMap = new Map(bot);
@@ -114,12 +115,17 @@ public class Simulator{
 	    	}	
 		}
 		
+		
+		
 		System.out.println("explorationDone = "+ explorationDone);
 		
 		// hold main thread here during exploration 
 		while (!explorationDone){}
 		
+		System.out.println("here outside fp");
+		
 		if (!fastestPathDone){
+			System.out.println("here wating in fp");
 			while (!msg.contains(CommMgr.FP_START)){	
 				if (msg.contains(CommMgr.FP_START)){  		
 					break;         
@@ -434,7 +440,7 @@ public class Simulator{
         btn_reset.addMouseListener(new MouseAdapter(){
         	public void mousePressed(MouseEvent e){
         	
-        		bot.reset(RobotConstants.START_ROW, RobotConstants.START_COL, RobotConstants.START_DIR);
+        		bot.reset(Constants.START_ROW, Constants.START_COL, RobotConstants.START_DIR);
         		exploredMap.reset();   
         		realMap.reset();      		
         		exploredMap.repaint();
@@ -454,27 +460,28 @@ public class Simulator{
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
  		
-        	bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+        	bot.setRobotPos(Constants.START_ROW, Constants.START_COL);
             exploredMap.repaint();
 
-            if (realRun) {
-                while (true) {
-                    System.out.println("Waiting for FP_START...");
-                    String msg = comm.recvMsg();
-                    if (msg.equals(CommMgr.FP_START)) break;
-                }
-            }
-            
+//            if (realRun) {
+//                while (true) {
+//                    System.out.println("Waiting for FP_START...");
+//                    String msg = comm.recvMsg();
+//                    if (msg.equals(CommMgr.FP_START)) break;
+//                }
+//            }
+//            
             FastestPathAlgo fastestPath = new FastestPathAlgo(exploredMap, bot);
-            
+            fastestPath.fpMode = true;
             
             if (wayPoint != null){
             	// if wayPoint is set, go to way point first before going to the goal 
             	String path1 = fastestPath.runFastestPath(wayPoint.getRow(),wayPoint.getCol());
                 fastestPath = new FastestPathAlgo(exploredMap, bot);
-                String path2 = fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+                String path2 = fastestPath.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);
                 
                 if (realRun) {
+                	//TODO send fastest path twice !!!
                 	comm.sendMsg(path1, CommMgr.MOVE);
                 	comm.sendMsg(path2, CommMgr.MOVE);
                 	comm.sendMsg("",CommMgr.FP_DONE);
@@ -483,11 +490,12 @@ public class Simulator{
                 
                 
             } else {
-            	String path = fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);  
+            	String path = fastestPath.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);  
             	
             	
             	if (realRun) {
-            		comm.sendMsg(path, CommMgr.MOVE);
+            		//TODO send fastest path twice  !!!!
+            		//comm.sendMsg(path, CommMgr.MOVE);
             		comm.sendMsg("",CommMgr.FP_DONE);
             	}
             
@@ -507,7 +515,7 @@ public class Simulator{
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
             
-            bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+            bot.setRobotPos(Constants.START_ROW, Constants.START_COL);
             exploredMap.repaint();
 
             ExplorationAlgo exploration;
@@ -531,7 +539,7 @@ public class Simulator{
             	
             	
             	
-            	CommMgr.getCommMgr().sendMsg("",CommMgr.EX_DONE);     
+            	     
             }
         	
             return 111;
@@ -548,7 +556,7 @@ public class Simulator{
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
         	
-        	bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+        	bot.setRobotPos(Constants.START_ROW, Constants.START_COL);
             exploredMap.repaint();
 
             ExplorationAlgo coverageExplo = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
@@ -569,7 +577,7 @@ public class Simulator{
         	CardLayout cl = ((CardLayout) mapPanel.getLayout());
             cl.show(mapPanel, "EXPLORED_MAP");
         	
-        	bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+        	bot.setRobotPos(Constants.START_ROW, Constants.START_COL);
             exploredMap.repaint();
             ExplorationAlgo timeExplo = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
             timeExplo.runExploration();

@@ -33,7 +33,8 @@ public class FastestPathAlgo {
 	private int loopCount;
     private boolean explorationMode = false;
     private double[][] gCosts ;  // real cost from start node to the node 
-	
+	public boolean fpMode = false;
+    
 	public FastestPathAlgo(Map exploredMap, Map realMap, Robot bot){
 		this(exploredMap, bot);
 		this.realMap = realMap;
@@ -68,6 +69,7 @@ public class FastestPathAlgo {
 		}
 	}
 	
+    
 	
 	 /**
      * Returns true if the cell is explored, not obstacle or virtual wall
@@ -105,6 +107,7 @@ public class FastestPathAlgo {
             if (visited.contains(exploredMap.getCell(goalRow, goalCol))) {
                 System.out.println("Goal visited. Path found!");
                 path = getPath(goalRow, goalCol);
+                
                 printFastestPath(path);
                 return executePath(path, goalRow, goalCol);
                 
@@ -239,10 +242,8 @@ public class FastestPathAlgo {
 	}
 
 	private String executePath(Stack<Cell> path, int goalRow, int goalCol) {
-        
-        
-        
-        tringBuilder outputString = new StringBuilder();
+
+        StringBuilder outputString = new StringBuilder();
         ArrayList<MOVEMENT> movements = new ArrayList<>();
         DIRECTION targetDir;
         
@@ -255,17 +256,15 @@ public class FastestPathAlgo {
         MOVEMENT m;
         
         Cell temp = path.pop();
-        //System.out.println("pop cell " +temp.getRow() +"," +temp.getCol());
-        
+
 		while((tempBot.getRobotPosRow() != goalRow) || (tempBot.getRobotPosCol() != goalCol)){
 			if (tempBot.getRobotPosRow() == temp.getRow() && tempBot.getRobotPosCol() == temp.getCol()) {
                 temp = path.pop();
-                //System.out.println("pop cell " +temp.getRow() +"," +temp.getCol());
             }
 			
 			targetDir = getTargetDir(tempBot.getCell(), temp);
-			System.out.println("targetDir " +targetDir);
-			System.out.println("robotDir " +tempBot.getRobotCurDir());
+//			System.out.println("targetDir " +targetDir);
+//			System.out.println("robotDir " +tempBot.getRobotCurDir());
 			
 			if (tempBot.getRobotCurDir() != targetDir) {
                 m = getTargetMove(tempBot.getRobotCurDir(), targetDir);
@@ -427,6 +426,9 @@ public class FastestPathAlgo {
 	            temp = pathForPrint.pop();
 	            if (!pathForPrint.isEmpty()) System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ") --> ");
 	            else System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ")");
+	            
+	            if (fpMode == true)
+	            	exploredMap.grid[temp.getRow()][temp.getCol()].setIsTrail();
 	        }
 
 	        System.out.println("\n");

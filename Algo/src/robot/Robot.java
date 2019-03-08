@@ -8,6 +8,7 @@ import map.Cell;
 import map.Map;
 import robot.RobotConstants.DIRECTION;
 import simulator.Constants;
+import simulator.Simulator;
 import robot.RobotConstants.MOVEMENT;
 import utils.CommMgr;
 import utils.MapDescriptor;
@@ -54,12 +55,11 @@ public class Robot{
 
         // initialise sensorS    
         SSFront1 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol - 1, this.robotDir, "SSFront1");
-        SSFront2 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol, this.robotDir, "SRSSFront2");
+        SSFront2 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol, this.robotDir, "SSFront2");
         SSFront3 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol + 1, this.robotDir, "SSFront3");
         SSLeft1 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol - 1,findNewDirection(MOVEMENT.LEFT) , "SSLeft1");
         SSLeft2 = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow - 1, this.posCol - 1, findNewDirection(MOVEMENT.LEFT), "SSLeft2");
-        SLRight = new Sensor(RobotConstants.SENSOR_LONG_RANGE_L, RobotConstants.SENSOR_LONG_RANGE_H, this.posRow+1, this.posCol + 1, findNewDirection(MOVEMENT.RIGHT) , "SLRight");
-        
+        SLRight = new Sensor(RobotConstants.SENSOR_LONG_RANGE_L, RobotConstants.SENSOR_LONG_RANGE_H, this.posRow+1, this.posCol + 1, findNewDirection(MOVEMENT.RIGHT) , "SLRight");       
     }
     
 
@@ -93,7 +93,7 @@ public class Robot{
     }
 
     private void updateTouchedGoal() {
-        if (this.getRobotPosRow() == RobotConstants.GOAL_ROW && this.getRobotPosCol() == RobotConstants.GOAL_COL)
+        if (this.getRobotPosRow() == Constants.GOAL_ROW  && this.getRobotPosCol() == Constants.GOAL_COL)
             this.touchedGoal = true;
     }
 
@@ -171,6 +171,7 @@ public class Robot{
     /**
      * Overloaded method that calls this.move(MOVEMENT m, boolean sendMoveToAndroid = true).
      */
+    
     public void move(MOVEMENT m) {
         this.move(m, true);
     }
@@ -188,21 +189,20 @@ public class Robot{
         	}
             comm.sendMsg(msg, CommMgr.MOVE);
             
-            
-//            switch (robotDir) {
-//                case NORTH:
-//                    posRow += count;
-//                    break;
-//                case EAST:
-//                    posCol += count;
-//                    break;
-//                case SOUTH:
-//                    posRow += count;
-//                    break;
-//                case WEST:
-//                    posCol += count;
-//                    break;
-//            }
+            switch (robotDir) {
+                case NORTH:
+                    posRow += count;
+                    break;
+                case EAST:
+                    posCol += count;
+                    break;
+                case SOUTH:
+                    posRow -= count;
+                    break;
+                case WEST:
+                    posCol -= count;
+                    break;
+            }
 //            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
         }
     }
@@ -214,6 +214,8 @@ public class Robot{
     private void sendMovement(MOVEMENT m, boolean sendMoveToAndroid) {
         CommMgr comm = CommMgr.getCommMgr();
         comm.sendMsg(Character.toString(MOVEMENT.print(m)), CommMgr.MOVE);
+        comm.sendMsg(getRobotPosRow() + "," + getRobotPosCol() + "," + getRobotCurDir(), CommMgr.BOT_POS);
+        
 //        if (m != MOVEMENT.CALIBRATE && sendMoveToAndroid) {
 //            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
 //        }

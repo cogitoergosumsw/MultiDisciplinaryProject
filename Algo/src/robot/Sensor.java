@@ -151,10 +151,10 @@ public class Sensor {
                 break;
             } else if (exploredMap.getCell(row, col).getIsObstacle()) {
             	// clear previously set obstacle cells if sensors detect no obstacle
-            	//if (id.equals("SSFront1") || id.equals("SSFront2") || id.equals("SSFront3")) 
-            		
-            	exploredMap.clearObstacleCell(row, col);
-            	exploredMap.repaint(); //debug
+            	if (id.equals("SSFront1") || id.equals("SSFront2") || id.equals("SSFront3")){ 
+            		exploredMap.clearObstacleCell(row, col);
+            		exploredMap.repaint(); //debug
+            	}
             }
            
         }

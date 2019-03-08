@@ -19,7 +19,7 @@ public class CommMgr {
     public static final String TIME_EX_START = "TIME_START";
     public static final String COVERAGE_EX_START = "COVERAGE_START";
     
-    public static final String BOT_POS = "BOT_POS";         // PC --> Android
+    public static final String BOT_POS = "BOT";         // PC --> Android
     public static final String BOT_START = "BOT_START";     // PC --> Arduino
     public static final String INSTRUCTIONS = "INSTR";      // PC --> Arduino
     public static final String MAP_STRING1 ="EXPLORED_DATA"; // PC --> Arduino
@@ -110,7 +110,9 @@ public class CommMgr {
                 outputMsg = msgType + "|" + msg + ";\n";
             }      
             
-            System.out.println("Sending out message:\n" + outputMsg);
+            if (msgType != MAP_STRING1 && msgType!= MAP_STRING2)
+            	System.out.println("Sending out message:\n" + outputMsg);
+           
             writer.write(outputMsg);
             writer.flush();
         } catch (IOException e) {
