@@ -2,7 +2,7 @@
 # RPi as the server, PC as the client
 
 #IP_ADDRESS = "192.168.18.20"  # IP Address of PC
-IP_PORT = 12318  # change accordingly if IP port not closed
+IP_PORT = 12319  # change accordingly if IP port not closed
 
 import socket
 
