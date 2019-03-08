@@ -8,7 +8,7 @@ public class RobotConstants {
     public static final int SPEED = 50;                            // delay between movements (ms)
     public static final DIRECTION START_DIR = DIRECTION.NORTH;      // start direction
     public static final int SENSOR_SHORT_RANGE_L = 1;               // range of short range sensor (cells)
-    public static final int SENSOR_SHORT_RANGE_H = 4;               // range of short range sensor (cells)
+    public static final int SENSOR_SHORT_RANGE_H = 3;               // range of short range sensor (cells)
     public static final int SENSOR_LONG_RANGE_L = 2;                // range of long range sensor (cells)
     public static final int SENSOR_LONG_RANGE_H = 5;                // range of long range sensor (cells)
 
@@ -59,6 +59,24 @@ public class RobotConstants {
                 case ERROR:
                 default:
                     return 'E';
+            }
+        }
+        
+        public static char printSmall(MOVEMENT m) {
+            switch (m) {
+                case FORWARD:
+                    return 'f';
+                case BACKWARD:
+                    return 'b';
+                case RIGHT:
+                    return 'r';
+                case LEFT:
+                    return 'l';
+                case CALIBRATE:
+                    return 'c';
+                case ERROR:
+                default:
+                    return 'e';
             }
         }
     }

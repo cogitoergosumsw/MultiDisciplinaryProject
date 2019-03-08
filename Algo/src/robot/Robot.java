@@ -105,7 +105,7 @@ public class Robot{
      * Takes in a MOVEMENT and moves the robot accordingly by changing its position and direction. Sends the movement
      * if this.realBot is set.
      */
-    public void move(MOVEMENT m, boolean sendMoveToAndroid){
+    public void move(MOVEMENT m, boolean sendUpperCase){
         if (!realBot) {
             // Emulate real movement by pausing execution.
             try {
@@ -160,7 +160,7 @@ public class Robot{
     }
 
     if (realBot) 
-    	sendMovement(m, sendMoveToAndroid);
+    	sendMovement(m, sendUpperCase);
     else 
     	System.out.println("Move: " + MOVEMENT.print(m));
     
@@ -169,7 +169,8 @@ public class Robot{
     }
 
     /**
-     * Overloaded method that calls this.move(MOVEMENT m, boolean sendMoveToAndroid = true).
+     * Overloaded method that calls this.move(MOVEMENT m, boolean sendUpperCase = true).
+     * by default send uppercase
      */
     
     public void move(MOVEMENT m) {
@@ -179,15 +180,17 @@ public class Robot{
 
     public void moveForwardMultiple(int count) {
         if (count == 1) {
-            move(MOVEMENT.FORWARD);
+            move(MOVEMENT.FORWARD, false);
         } else {
             CommMgr comm = CommMgr.getCommMgr();
             
-        	String msg = "F";
+        	String msg = "f";
         	for (int i = 0; i< count - 1; i++){
-        		msg += "F";
+        		msg += "f";
         	}
-            comm.sendMsg(msg, CommMgr.MOVE);
+
+        	// repeat send 
+            //comm.sendMsg(msg, CommMgr.MOVE);
             
             switch (robotDir) {
                 case NORTH:
@@ -211,14 +214,16 @@ public class Robot{
     /**
      * Uses the CommMgr to send the next movement to the robot.
      */
-    private void sendMovement(MOVEMENT m, boolean sendMoveToAndroid) {
-        CommMgr comm = CommMgr.getCommMgr();
-        comm.sendMsg(Character.toString(MOVEMENT.print(m)), CommMgr.MOVE);
-        comm.sendMsg(getRobotPosRow() + "," + getRobotPosCol() + "," + getRobotCurDir(), CommMgr.BOT_POS);
+    
+    private void sendMovement(MOVEMENT m, boolean sendMoveToAndroid) {	
+    	CommMgr comm = CommMgr.getCommMgr();
         
-//        if (m != MOVEMENT.CALIBRATE && sendMoveToAndroid) {
-//            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
-//        }
+    	if (sendMoveToAndroid){
+    		comm.sendMsg(Character.toString(MOVEMENT.print(m)), CommMgr.MOVE);
+    		if (m != MOVEMENT.CALIBRATE)
+    			comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
+    	}
+
     }
     
     /**

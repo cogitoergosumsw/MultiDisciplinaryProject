@@ -174,10 +174,10 @@ public class ExplorationAlgo {
     	System.out.println(nearestExplored.toString());
     	
     	if (!bot.getRealBot()){
-    		FastestPathAlgo goToNearestUnexplored = new FastestPathAlgo(exploredMap, realMap, bot);     
+    		FastestPathAlgo goToNearestUnexplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
     		goToNearestUnexplored.runFastestPath(nearestExplored.getRow(), nearestExplored.getCol());  
     	} else {
-    		FastestPathAlgo goToNearestUnexplored = new FastestPathAlgo(exploredMap, bot);      
+    		FastestPathAlgo goToNearestUnexplored = new FastestPathAlgo(exploredMap, bot, false);      
     		goToNearestUnexplored.runFastestPath(nearestExplored.getRow(), nearestExplored.getCol()); 
     	}
     }
@@ -280,7 +280,7 @@ public class ExplorationAlgo {
         }
         return false;
     }
-
+    
     /**
      * * Returns true if the left side of the robot is free to move into.
      */
@@ -298,6 +298,7 @@ public class ExplorationAlgo {
         return false;
     }
 
+    
     /**
      * Returns true if the robot can move to the north cell.
      */
@@ -307,6 +308,7 @@ public class ExplorationAlgo {
         return isExploredAndFree(botRow + 1, botCol);
     }
 
+    
     /**
      * Returns true if the robot can move to the east cell.
      */
@@ -346,15 +348,15 @@ public class ExplorationAlgo {
     	System.out.println("coverage limit = " + coverageLimit);
         System.out.println("time limit = "+timeLimit);
         
-    	
+    	// in case of finished exploring the whole map but the goal has not been touched, go to goal first, then go back to start
     	if (!bot.getTouchedGoal() && coverageLimit == Constants.MAP_SIZE && timeLimit == 3600) {
     		FastestPathAlgo goToGoal;
-    		goToGoal = new FastestPathAlgo(exploredMap, realMap, bot); 
+    		goToGoal = new FastestPathAlgo(exploredMap, realMap, bot, false); 
             goToGoal.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);  
             
         } 
 
-        FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot);   // ???? removed realMap from parameter
+        FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot, false);   
         returnToStart.runFastestPath(Constants.START_ROW, Constants.START_COL);
         
         System.out.println("Exploration complete!");

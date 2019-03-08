@@ -1,7 +1,7 @@
 package algorithms;
 
 import simulator.Constants;
-
+import utils.CommMgr;
 import map.Cell;
 import map.Map;
 import robot.Robot;
@@ -33,15 +33,17 @@ public class FastestPathAlgo {
 	private int loopCount;
     private boolean explorationMode = false;
     private double[][] gCosts ;  // real cost from start node to the node 
-	public boolean fpMode = false;
+	private boolean fpMode = false;
     
-	public FastestPathAlgo(Map exploredMap, Map realMap, Robot bot){
-		this(exploredMap, bot);
+	public FastestPathAlgo(Map exploredMap, Map realMap, Robot bot, Boolean fpMode){
+		this(exploredMap, bot, fpMode);
 		this.realMap = realMap;
 		this.explorationMode = true;
 	}
 	
-	public FastestPathAlgo(Map exploredMap, Robot bot){
+	
+
+	public FastestPathAlgo(Map exploredMap, Robot bot, Boolean fpMode){
 		this.bot = bot;
 		this.exploredMap = exploredMap;
 		this.curCell = exploredMap.getCell(bot.getRobotPosRow(), bot.getRobotPosCol());
@@ -52,6 +54,7 @@ public class FastestPathAlgo {
 		this.neighbors =  new Cell[4];
 		this.gCosts = new double[Constants.MAP_ROW][Constants.MAP_COL];
 		this.loopCount = 0;
+		this.fpMode = fpMode;
 		
 		toVisit.add(curCell);
 		updateNeighbors(curCell);
@@ -69,19 +72,7 @@ public class FastestPathAlgo {
 		}
 	}
 	
-    
-	
-	 /**
-     * Returns true if the cell is explored, not obstacle or virtual wall
-     */
-    private boolean canBeVisited(Cell c) {
-        return c.getIsExplored() && !c.getIsObstacle() && !c.getIsVirtualWall();
-    }
 
-	
-	
-	
-	
 	public String runFastestPath(int goalRow, int goalCol){
 		System.out.println("Calculating fastest path from (" + curCell.getRow() + ", " + curCell.getCol() + ") to goal (" + goalRow + ", " + goalCol + ")...");
 		
@@ -91,12 +82,12 @@ public class FastestPathAlgo {
 			loopCount++;
 
 			curCell = minimumCostCell(goalRow, goalCol);
-			System.out.println("curCell = "+ curCell.getRow() + " , " + curCell.getCol());
+			//System.out.println("curCell = "+ curCell.getRow() + " , " + curCell.getCol());
 			
 			//
 			if (parents.containsKey(curCell)){
 				curDir = getTargetDir(parents.get(curCell), curCell);
-				System.out.println("parent is ("+parents.get(curCell).getRow() + "," + parents.get(curCell).getCol()+") and curDir = " + curDir );
+				//System.out.println("parent is ("+parents.get(curCell).getRow() + "," + parents.get(curCell).getCol()+") and curDir = " + curDir );
 				
 			}
 			
@@ -120,7 +111,12 @@ public class FastestPathAlgo {
 		return null;
 	}
 
-	
+	 /**
+     * Returns true if the cell is explored, not obstacle or virtual wall
+     */
+    private boolean canBeVisited(Cell c) {
+        return c.getIsExplored() && !c.getIsObstacle() && !c.getIsVirtualWall();
+    }
 	
 	private void updateNeighbors(Cell curCell) {
         // neighbor on top 
@@ -249,9 +245,7 @@ public class FastestPathAlgo {
         
         Robot tempBot = new Robot(bot.getRobotPosRow(),bot.getRobotPosCol(),false);
         tempBot.setRobotDir(bot.getRobotCurDir());
-        
-        
-        
+
         tempBot.setSpeed(0);
         MOVEMENT m;
         
@@ -273,7 +267,7 @@ public class FastestPathAlgo {
             }
 			
 			
-			 System.out.println("Movement " + MOVEMENT.print(m) + " from (" + tempBot.getRobotPosRow() + ", " + tempBot.getRobotPosCol() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
+//			 System.out.println("Movement " + MOVEMENT.print(m) + " from (" + tempBot.getRobotPosRow() + ", " + tempBot.getRobotPosCol() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
 
 	         tempBot.move(m);
 	         movements.add(m);
@@ -288,7 +282,9 @@ public class FastestPathAlgo {
                         return "T";
 					}
 				}
-				bot.move(x);
+				
+				
+				bot.move(x, false);
 				this.exploredMap.repaint();
 				
 				// During exploration, use sensor data to update exploredMap.
@@ -315,7 +311,7 @@ public class FastestPathAlgo {
                         fCount = 0;
                         exploredMap.repaint();
                     }
-                    bot.move(x);
+                    bot.move(x, false);
                     exploredMap.repaint();
                 }
                 
@@ -325,7 +321,16 @@ public class FastestPathAlgo {
                 exploredMap.repaint();
             }
 		}
-        System.out.println("\nMovements: " + outputString.toString());
+//        System.out.println("\nMovements: " + outputString.toString().toLowerCase());
+        
+        
+       System.out.println("");
+        
+        
+        if (bot.getRealBot()){
+        	CommMgr.getCommMgr().sendMsg(outputString.toString().toLowerCase(), CommMgr.MOVE);
+        	
+        }
         
         return outputString.toString();
 	}
@@ -417,7 +422,7 @@ public class FastestPathAlgo {
 
 	private void printFastestPath(Stack<Cell> path) {
 		 System.out.println("\nLooped " + loopCount + " times.");
-	        System.out.println("The number of steps is: " + (path.size() - 1) + "\n");
+	        System.out.println("The number of steps is: " + (path.size() - 1) );
 
 	        Stack<Cell> pathForPrint = (Stack<Cell>) path.clone();
 	        Cell temp;
@@ -430,7 +435,6 @@ public class FastestPathAlgo {
 	            if (fpMode == true)
 	            	exploredMap.grid[temp.getRow()][temp.getCol()].setIsTrail();
 	        }
-
 	        System.out.println("\n");
 	}
 	

@@ -75,6 +75,9 @@ public class Map extends JPanel{
         }
     }
     
+    /**
+     * set a cell as obstacle and explored cells around it as virtual wall 
+     */    
     public void setObstacleCell(int row, int col) {
         if (inStartZone(row, col) || inGoalZone(row, col))
             return;
@@ -82,37 +85,45 @@ public class Map extends JPanel{
         grid[row][col].setIsObstacle();
 
         if (row >= 1) {
-            grid[row - 1][col].setIsVirtualWall();            // bottom cell
+        	if (grid[row - 1][col].getIsExplored())	
+        		grid[row - 1][col].setIsVirtualWall();            // bottom cell
 
             if (col < Constants.MAP_COL - 1) {
-                grid[row - 1][col + 1].setIsVirtualWall();    // bottom-right cell
+                if(grid[row - 1][col + 1].getIsExplored())
+                	grid[row - 1][col + 1].setIsVirtualWall();    // bottom-right cell
             }
 
             if (col >= 1) {
-                grid[row - 1][col - 1].setIsVirtualWall();    // bottom-left cell
+            	if(grid[row - 1][col - 1].getIsExplored())
+            		grid[row - 1][col - 1].setIsVirtualWall();    // bottom-left cell
             }
         }
 
         if (row < Constants.MAP_ROW - 1) {
-            grid[row + 1][col].setIsVirtualWall();            // top cell
+        	if(grid[row + 1][col].getIsExplored())
+        		grid[row + 1][col].setIsVirtualWall();            // top cell
 
             if (col < Constants.MAP_COL - 1) {
-                grid[row + 1][col + 1].setIsVirtualWall();    // top-right cell
+            	if(grid[row + 1][col + 1].getIsExplored())
+            	grid[row + 1][col + 1].setIsVirtualWall();    // top-right cell
             }
 
             if (col >= 1) {
-                grid[row + 1][col - 1].setIsVirtualWall();    // top-left cell
+            	if(grid[row + 1][col - 1].getIsExplored())
+            		grid[row + 1][col - 1].setIsVirtualWall();    // top-left cell
             }
         }
 
         if (col >= 1) {
-            grid[row][col - 1].setIsVirtualWall();            // left cell
+        	if(grid[row][col - 1].getIsExplored())
+        		grid[row][col - 1].setIsVirtualWall();            // left cell
         }
 
         if (col < Constants.MAP_COL - 1) {
-            grid[row][col + 1].setIsVirtualWall();            // right cell
+        	if(grid[row][col + 1].getIsExplored())
+        		grid[row][col + 1].setIsVirtualWall();            // right cell
         }
-    }
+    } 
     
     public void clearObstacleCell(int row, int col){
 
@@ -139,6 +150,9 @@ public class Map extends JPanel{
     
 }
     
+    /**
+     * checks if it is cells around on edges of the arena 
+     */
     public boolean isVirtualWallAroundEdge(int row, int col){
     	if (row == 0 || row == Constants.MAP_ROW - 1) return true;
     	

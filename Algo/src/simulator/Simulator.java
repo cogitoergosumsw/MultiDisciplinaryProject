@@ -56,7 +56,8 @@ public class Simulator{
     public static void main(String[] args){
     	// establish connection if realRun
     	if (realRun)
-    		comm.openConnection();
+    		while (!comm.openConnection());
+    		
     	
     	bot = new Robot(Constants.START_ROW, Constants.START_COL, realRun);
 
@@ -463,21 +464,20 @@ public class Simulator{
         	bot.setRobotPos(Constants.START_ROW, Constants.START_COL);
             exploredMap.repaint();
 
-//            if (realRun) {
-//                while (true) {
-//                    System.out.println("Waiting for FP_START...");
-//                    String msg = comm.recvMsg();
-//                    if (msg.equals(CommMgr.FP_START)) break;
-//                }
-//            }
-//            
-            FastestPathAlgo fastestPath = new FastestPathAlgo(exploredMap, bot);
-            fastestPath.fpMode = true;
-            
+            if (realRun) {
+                while (true) {
+                    System.out.println("Waiting for FP_START...");
+                    String msg = comm.recvMsg();
+                    if (msg.equals(CommMgr.FP_START)) break;
+                }
+            }
+//           
+            FastestPathAlgo fastestPath = new FastestPathAlgo(exploredMap, bot, true);
+
             if (wayPoint != null){
             	// if wayPoint is set, go to way point first before going to the goal 
             	String path1 = fastestPath.runFastestPath(wayPoint.getRow(),wayPoint.getCol());
-                fastestPath = new FastestPathAlgo(exploredMap, bot);
+                fastestPath = new FastestPathAlgo(exploredMap, bot, true);
                 String path2 = fastestPath.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);
                 
                 if (realRun) {
@@ -491,11 +491,8 @@ public class Simulator{
                 
             } else {
             	String path = fastestPath.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);  
-            	
-            	
+            	            	
             	if (realRun) {
-            		//TODO send fastest path twice  !!!!
-            		//comm.sendMsg(path, CommMgr.MOVE);
             		comm.sendMsg("",CommMgr.FP_DONE);
             	}
             
@@ -532,14 +529,9 @@ public class Simulator{
             generateMapDescriptor(exploredMap);
      
             
+            // starting the fastest path thread after exploration is done
             if (realRun) {
-            	//TODO 
-                // figure this out later 
-            	//new FastestPath().execute();
-            	
-            	
-            	
-            	     
+            	new FastestPath().execute();     
             }
         	
             return 111;

@@ -81,12 +81,14 @@ public class RequestHandler extends Thread {
 		send("SENSOR_DATA|1,1,1,1,1,0;");	
 
 		send("SENSOR_DATA|0,0,0,1,1,0;");
-		send("SENSOR_DATA|0,0,0,1,1,0;");
+	    send("SENSOR_DATA|0,0,0,1,1,0;");
 		send("SENSOR_DATA|0,0,0,1,1,0;");
 		send("SENSOR_DATA|0,0,0,1,1,0;");
 		send("SENSOR_DATA|3,3,3,1,1,0;");	
 		send("SENSOR_DATA|2,2,2,1,1,0;");	
-		send("SENSOR_DATA|1,1,1,1,1,0;");
+        send("SENSOR_DATA|1,1,1,1,1,0;");
+        send("SENSOR_DATA|0,0,0,1,1,0;");
+        send("SENSOR_DATA|0,0,0,1,1,0;");
 		
 		String message = receive();
 		
@@ -97,7 +99,7 @@ public class RequestHandler extends Thread {
 		}
 		
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(8000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -114,26 +116,26 @@ public class RequestHandler extends Thread {
     	
     }
 
-    @Override
-    public void run() {
-        try {
-            System.out.println( "Received a connection" );
-            String data;
+    // @Override
+    // public void run() {
+    //     try {
+    //         System.out.println( "Received a connection" );
+    //         String data;
 
 //            TimeUnit.MILLISECONDS.sleep(1000);
 
             // send "checklist"
-            send(NetworkConstants.START_CHECKLIST);
-            sendStartMsg();
+            // send(NetworkConstants.START_CHECKLIST);
+            // sendStartMsg();
 
-            while (true) {
-                // wait for incoming data
-                do {
-                    data = receive();
-                } while(data == null);
+            // while (true) {
+            //     // wait for incoming data
+            //     do {
+            //         data = receive();
+            //     } while(data == null);
 
-                handle(data);
-            }
+            //     handle(data);
+            // }
 
             // Close our connection
 //            in.close();
@@ -141,84 +143,84 @@ public class RequestHandler extends Thread {
 //            socket.close();
 
 //            System.out.println( "Connection closed" );
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-    }
+    //     }
+    //     catch( Exception e )
+    //     {
+    //         e.printStackTrace();
+    //     }
+    // }
 
-    public void handle(String msg) throws InterruptedException {
-        char firstChar;
-        msg = msg.substring(1);
-        firstChar = msg.charAt(0);
+    // public void handle(String msg) throws InterruptedException {
+    //     char firstChar;
+    //     msg = msg.substring(1);
+    //     firstChar = msg.charAt(0);
 
-        if (firstChar == '{') {
-            System.out.println("Unhandled: " + msg);
-        }
-        else {
-            String[] commands = msg.split("\\|");
-            for (String cmd: commands) {
-                execute_command(cmd);
-            }
-        }
-    }
+    //     if (firstChar == '{') {
+    //         System.out.println("Unhandled: " + msg);
+    //     }
+    //     else {
+    //         String[] commands = msg.split("\\|");
+    //         for (String cmd: commands) {
+    //             execute_command(cmd);
+    //         }
+    //     }
+    // }
 
-    private void execute_command(String cmd) throws InterruptedException {
-        char firstChar = cmd.charAt(0);
-        int step = 1;
-        if (cmd.length() > 1) {
-            step = Integer.parseInt(cmd.substring(1));
-        }
-        switch (firstChar) {
-            case 'U':
-                sendSensorRes();
-                break;
-            case 'W':
-                robot.move(Command.FORWARD, step, exploredMap, RobotConstants.STEP_PER_SECOND);
-                sendSensorRes();
-                break;
-            case 'X':
-                robot.move(Command.BACKWARD, step, exploredMap, RobotConstants.STEP_PER_SECOND);
-                sendSensorRes();
-                break;
-            case 'D':
-                robot.turn(Command.TURN_RIGHT, RobotConstants.STEP_PER_SECOND);
-                sendSensorRes();
-                break;
-            case 'A':
-                robot.turn(Command.TURN_LEFT, RobotConstants.STEP_PER_SECOND);
-                sendSensorRes();
-                break;
-            default:
-                LOGGER.warning("Wrong char, do nothing");
-                break;
-        }
-        robot.sense(exploredMap, realMap);
-    }
+    // private void execute_command(String cmd) throws InterruptedException {
+    //     char firstChar = cmd.charAt(0);
+    //     int step = 1;
+    //     if (cmd.length() > 1) {
+    //         step = Integer.parseInt(cmd.substring(1));
+    //     }
+    //     switch (firstChar) {
+    //         case 'U':
+    //             sendSensorRes();
+    //             break;
+    //         case 'W':
+    //             robot.move(Command.FORWARD, step, exploredMap, RobotConstants.STEP_PER_SECOND);
+    //             sendSensorRes();
+    //             break;
+    //         case 'X':
+    //             robot.move(Command.BACKWARD, step, exploredMap, RobotConstants.STEP_PER_SECOND);
+    //             sendSensorRes();
+    //             break;
+    //         case 'D':
+    //             robot.turn(Command.TURN_RIGHT, RobotConstants.STEP_PER_SECOND);
+    //             sendSensorRes();
+    //             break;
+    //         case 'A':
+    //             robot.turn(Command.TURN_LEFT, RobotConstants.STEP_PER_SECOND);
+    //             sendSensorRes();
+    //             break;
+    //         default:
+    //             LOGGER.warning("Wrong char, do nothing");
+    //             break;
+    //     }
+    //     robot.sense(exploredMap, realMap);
+    // }
 
-    public void sendSensorRes() {
-        HashMap<String, Integer> sensorRes = robot.getSensorRes(exploredMap, realMap);
-        send(formatSensorRes(sensorRes));
-    }
+    // public void sendSensorRes() {
+    //     HashMap<String, Integer> sensorRes = robot.getSensorRes(exploredMap, realMap);
+    //     send(formatSensorRes(sensorRes));
+    // }
 
-    public String formatSensorRes(HashMap<String, Integer> sensorRes) {
-        StringBuilder sb = new StringBuilder();
-        int obsBlock;
-        for (String sname: robot.getSensorList()) {
-            sb.append(sname);
-            sb.append(":");
-            obsBlock = sensorRes.get(sname);
-            if (obsBlock == -1) {
-                sb.append(obsBlock);
-            }
-            else {
-                sb.append(obsBlock - 1);
-            }
-            sb.append("|");
-        }
-        return sb.toString();
-    }
+    // public String formatSensorRes(HashMap<String, Integer> sensorRes) {
+    //     StringBuilder sb = new StringBuilder();
+    //     int obsBlock;
+    //     for (String sname: robot.getSensorList()) {
+    //         sb.append(sname);
+    //         sb.append(":");
+    //         obsBlock = sensorRes.get(sname);
+    //         if (obsBlock == -1) {
+    //             sb.append(obsBlock);
+    //         }
+    //         else {
+    //             sb.append(obsBlock - 1);
+    //         }
+    //         sb.append("|");
+    //     }
+    //     return sb.toString();
+    // }
 
     /**
      * Sending a String type msg through socket
