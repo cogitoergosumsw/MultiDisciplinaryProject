@@ -115,15 +115,14 @@ public class ExplorationAlgo {
      * @TODO move 3 steps if no obstacle in front 
      * */
     private void explorationLoop(int r, int c) {
-        int loopCount = 1;
+        int loopCount = 0;
     	do {
     		//TODO send calibration 
-//        	if (bot.getRealBot() && loopCount % 5 == 0){
-//        		moveBot(MOVEMENT.CALIBRATE);
-//        		CommMgr commMgr = CommMgr.getCommMgr();
-//                commMgr.sendMsg(Character.toString(MOVEMENT.print(MOVEMENT.CALIBRATE)), CommMgr.MOVE);
-        
-        	//}
+    		System.out.println("loopcount = " + loopCount);
+        	if (bot.getRealBot() && loopCount % 3 == 0){
+        		moveBot(MOVEMENT.CALIBRATE);
+        		CommMgr commMgr = CommMgr.getCommMgr();
+             }
     		nextMove(); 
             areaExplored = exploredMap.calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);

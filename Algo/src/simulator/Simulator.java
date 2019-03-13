@@ -116,37 +116,6 @@ public class Simulator{
 	    	}	
 		}
 		
-		
-		
-		System.out.println("explorationDone = "+ explorationDone);
-		
-		// hold main thread here during exploration 
-		while (!explorationDone){}
-		
-		System.out.println("here outside fp");
-		
-		if (!fastestPathDone){
-			System.out.println("here wating in fp");
-			while (!msg.contains(CommMgr.FP_START)){	
-				if (msg.contains(CommMgr.FP_START)){  		
-					break;         
-				}
-				
-				if (msg.contains(CommMgr.WAYPOINT_DATA)){
-					setWayPoint(msg);
-				}	
-				msg = comm.recvMsg();		
-			}
-			
-			if (msg.contains(CommMgr.FP_START)){  		
-					new FastestPath().execute();           
-	    	}	
-		}
-		
-		
-		
-		
-		
    
 //	    if (msg.contains(CommMgr.FP_START)){	
 //	    		new FastestPath().execute();

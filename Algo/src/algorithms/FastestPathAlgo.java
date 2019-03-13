@@ -328,7 +328,15 @@ public class FastestPathAlgo {
         
         
         if (bot.getRealBot()){
-        	CommMgr.getCommMgr().sendMsg(outputString.toString().toLowerCase(), CommMgr.MOVE);
+        	String fpStr = outputString.toString().toLowerCase();
+        	String fpStrWithC="";
+        	for (int i = 0; i < fpStr.length(); i++){
+        		fpStrWithC += fpStr.substring(i, i+1);
+        		if (i%3 == 0) 
+        			fpStrWithC += "c" ;
+        	}
+
+        	CommMgr.getCommMgr().sendMsg(fpStrWithC, CommMgr.MOVE);
         	
         }
         
