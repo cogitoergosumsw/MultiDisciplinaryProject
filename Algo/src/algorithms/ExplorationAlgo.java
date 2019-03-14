@@ -27,7 +27,8 @@ public class ExplorationAlgo {
     private long endTime;
     private int lastCalibrate;
     private boolean calibrationMode;
-
+    private int numberOfContinuousLeftTurn = 0;
+    private int moveCount;
     public ExplorationAlgo(Map exploredMap, Map realMap, Robot bot, int coverageLimit, int timeLimit) {
         this.exploredMap = exploredMap;
         this.realMap = realMap;
@@ -114,12 +115,12 @@ public class ExplorationAlgo {
     /**
      * @TODO move 3 steps if no obstacle in front 
      * */
-    private void explorationLoop(int r, int c) {
-        int loopCount = 0;
+    private void explorationLoop(int startR, int startC) {
+        moveCount = 0;
     	do {
     		//TODO send calibration 
-    		System.out.println("loopcount = " + loopCount);
-        	if (bot.getRealBot() && loopCount % 3 == 0){
+    		System.out.println("moveCount = " + moveCount);
+        	if (bot.getRealBot() && moveCount % 3 == 0){
         		moveBot(MOVEMENT.CALIBRATE);
         		CommMgr commMgr = CommMgr.getCommMgr();
              }
@@ -129,13 +130,13 @@ public class ExplorationAlgo {
             
             
             //TODO remove this , bot stops when it goes back to the starting zone
-            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c) {
+            if (bot.getRobotPosRow() == startR && bot.getRobotPosCol() == startC) {
 //                if (areaExplored != Constants.MAP_SIZE){
 //                	exploreUnexploredArea();
 //                }
                 break;          	      
             }
-            loopCount ++ ; 
+            moveCount ++ ; 
         } while (areaExplored < coverageLimit && System.currentTimeMillis() < endTime);
     	
     	
@@ -167,10 +168,10 @@ public class ExplorationAlgo {
     private void goToNearestUnexplored(Cell startCell){
     	
     	Cell nearestUnexplored = nearestUnexplored(startCell);
-    	System.out.println(nearestUnexplored.toString());
+    	System.out.println("nearest unexplored cell is : "+ nearestUnexplored.toString());
     	Cell nearestExplored = nearestExplored(nearestUnexplored);
     	
-    	System.out.println(nearestExplored.toString());
+    	System.out.println( "goint to cell : "+ nearestExplored.toString());
     	
     	if (!bot.getRealBot()){
     		FastestPathAlgo goToNearestUnexplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
@@ -225,24 +226,103 @@ public class ExplorationAlgo {
     }
     
     
+    private void goToNearestExploredNearWall(){
+    	
+    	Cell  nearestExploredNearWall = nearestExploredNearWall();
+    	
+    	// if there is no explored cell near wall, then go to the explored cell next to nearest unexplored cell
+    	if (nearestExploredNearWall == null){
+    		goToNearestUnexplored(bot.getCell());
+    		return;
+    	}
+    	
+    	
+    	Cell nearestExplored = nearestExplored(nearestExploredNearWall);
+    	System.out.println("nearest explored cell next to wall is : " + nearestExploredNearWall.toString());
+    	
+    	
+    	System.out.println( "goint to cell :" + nearestExplored.toString());
+    	
+
+    	if (!bot.getRealBot()){
+    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
+    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol());  
+    	} else {
+    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, bot, false);      
+    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol()); 
+    	}
+    	
+    	////change !!
+    	if (lookLeft() && lookRight()){
+    		bot.move(MOVEMENT.RIGHT);
+    	}
+    	
+    	
+    }
+    
+    
+    
+    
+   private Cell nearestExploredNearWall(){
+	   Cell cell, nearest = null;
+	   int temp, distance = 10000;
+	   
+	   for (int r = 0; r < Constants.MAP_ROW; r++){
+		   for (int c = 0; c < Constants.MAP_COL; c++){
+			   cell = exploredMap.grid[r][c];
+			   if (!(cell.getIsVirtualWall() && isExploredNotObstacle(r,c))) continue;
+			   temp = Math.abs(r - bot.getRobotPosRow()) + Math.abs(c - bot.getRobotPosCol()) ;
+			   if ( temp < distance){
+				   nearest = cell;
+				   distance = temp;
+			   }
+		   }
+	   }
+	   
+	   return nearest;
+   }
+   
+    
     /**
      * if there's no obstacle on the left then move left, 
      * if not and if there's no obstacle in front, move forward,
      * if not and if there's no obstacle on the right, move right 
      * else, turn 180 degrees
      */
+    
+    //!!!! change !!!!//
+    
     private void nextMove() {
+    	
         if (lookLeft()) {
             moveBot(MOVEMENT.LEFT);
-            if (lookForward()) moveBot(MOVEMENT.FORWARD);
+            if (lookForward()) {
+            	moveBot(MOVEMENT.FORWARD);
+            	moveCount ++ ;
+            }
+            numberOfContinuousLeftTurn++;
+            
+            if ( numberOfContinuousLeftTurn == 3){
+            	numberOfContinuousLeftTurn = 0;
+            	goToNearestExploredNearWall();
+            	//goToNearestUnexplored(bot.getCell());
+            }
         } else if (lookForward()) {
             moveBot(MOVEMENT.FORWARD);
+            numberOfContinuousLeftTurn = 0;
+            
         } else if (lookRight()) {
             moveBot(MOVEMENT.RIGHT);
-            if (lookForward()) moveBot(MOVEMENT.FORWARD);
+            if (lookForward()){
+            	moveBot(MOVEMENT.FORWARD);
+            	moveCount++;
+            }
+            numberOfContinuousLeftTurn = 0;
         } else {
             moveBot(MOVEMENT.LEFT);
             moveBot(MOVEMENT.LEFT);
+            numberOfContinuousLeftTurn = 0;
+            moveCount++;
         }
     }
 

@@ -10,8 +10,8 @@ public class Constants{
 //	
 	
 	
-    public static final int MAP_ROW = 13;
-    public static final int MAP_COL = 6;
+    public static final int MAP_ROW = 20;
+    public static final int MAP_COL = 15;
 
 	
 	public static final int GOAL_ROW = MAP_ROW - 2;
@@ -22,9 +22,5 @@ public class Constants{
     public static final int START_ROW = 1;
     public static final int START_COL = 1;
 
-    
-    
-
-      
     
 }

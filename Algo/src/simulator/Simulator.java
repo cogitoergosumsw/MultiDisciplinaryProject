@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import map.Map;
 import map.Cell;
 import robot.Robot;
+import robot.RobotConstants.MOVEMENT;
 import robot.*;
 
 import utils.MapDescriptor;
@@ -38,8 +39,8 @@ public class Simulator{
     private static JFrame mainFrame;
     private static JPanel mapPanel, buttonPanel, textPanel;
     public static JTextArea textArea;
-    public static boolean realRun = true;
-//    public static boolean realRun = false;
+//    public static boolean realRun = true;
+    public static boolean realRun = false;
     private static Robot bot;
     private static Map exploredMap = null;
     private static Map realMap = null;
@@ -107,7 +108,9 @@ public class Simulator{
 			}
 			
 			if (msg.contains(CommMgr.EX_START)){  		
-					new Exploration().execute();   
+					
+				//comm.sendMsg(MOVEMENT.CALIBRATE,CommMgr.MOVE);
+				new Exploration().execute();   
 					
 				 //debug
 //				coverageLimit = 81;
@@ -434,13 +437,16 @@ public class Simulator{
             exploredMap.repaint();
 
             if (realRun) {
+            	System.out.println("debug line 437");
                 while (true) {
                     System.out.println("Waiting for FP_START...");
                     String msg = comm.recvMsg();
-                    if (msg.equals(CommMgr.FP_START)) break;
+                    if (msg.contains(CommMgr.FP_START)) break;
                 }
             }
-//           
+           
+            
+            
             FastestPathAlgo fastestPath = new FastestPathAlgo(exploredMap, bot, true);
 
             if (wayPoint != null){

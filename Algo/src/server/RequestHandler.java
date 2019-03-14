@@ -105,7 +105,7 @@ public class RequestHandler extends Thread {
 			e.printStackTrace();
 		}
 		
-		send("FP_START");
+		send("FP_START|;");
 		
 		
 		
