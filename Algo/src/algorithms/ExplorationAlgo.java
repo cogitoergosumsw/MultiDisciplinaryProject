@@ -252,9 +252,18 @@ public class ExplorationAlgo {
     		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol()); 
     	}
     	
-    	////change !!
-    	if (lookLeft() && lookRight()){
-    		bot.move(MOVEMENT.RIGHT);
+    	
+    	// if it's not really next to a wall, then move forward until it cannot 
+    	while(lookForward()){
+    		bot.move(MOVEMENT.FORWARD);
+    		System.out.println("moving to :" + bot.getCell().toString());
+    	}
+    	
+    	
+    	// keep turning left until it cannot anymore 
+    	while (lookLeft()){
+    		bot.move(MOVEMENT.LEFT);
+    		System.out.println("turning left");
     	}
     	
     	

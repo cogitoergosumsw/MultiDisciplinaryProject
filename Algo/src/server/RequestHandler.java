@@ -65,6 +65,7 @@ public class RequestHandler extends Thread {
     }
     
 	public void sendReadings() {
+		
 		String msg = "SENSOR_DATA|0,0,0,1,1,0;";
 		send(msg);
 		send(msg);	
@@ -75,20 +76,23 @@ public class RequestHandler extends Thread {
 		send("SENSOR_DATA|1,1,1,1,1,0;");	
 		send("SENSOR_DATA|0,0,0,1,1,0;");
 		send("SENSOR_DATA|0,0,0,1,1,0;");
-	
-		send("SENSOR_DATA|3,3,3,2,2,0;");	
-		send("SENSOR_DATA|2,2,2,1,1,0;");	
-		send("SENSOR_DATA|1,1,1,1,1,0;");	
-
-		send("SENSOR_DATA|0,0,0,1,1,0;");
-	    send("SENSOR_DATA|0,0,0,1,1,0;");
-		send("SENSOR_DATA|0,0,0,1,1,0;");
-		send("SENSOR_DATA|0,0,0,1,1,0;");
-		send("SENSOR_DATA|3,3,3,1,1,0;");	
-		send("SENSOR_DATA|2,2,2,1,1,0;");	
-        send("SENSOR_DATA|1,1,1,1,1,0;");
-        send("SENSOR_DATA|0,0,0,1,1,0;");
-        send("SENSOR_DATA|0,0,0,1,1,0;");
+		send("SENSOR_DATA|0,0,0,0,0,0;");
+		send("SENSOR_DATA|0,0,0,0,0,0;");
+		
+		
+//		send("SENSOR_DATA|3,3,3,2,2,0;");	
+//		send("SENSOR_DATA|2,2,2,1,1,0;");	
+//		send("SENSOR_DATA|1,1,1,1,1,0;");	
+//
+//		send("SENSOR_DATA|0,0,0,1,1,0;");
+//	    send("SENSOR_DATA|0,0,0,1,1,0;");
+//		send("SENSOR_DATA|0,0,0,1,1,0;");
+//		send("SENSOR_DATA|0,0,0,1,1,0;");
+//		send("SENSOR_DATA|3,3,3,1,1,0;");	
+//		send("SENSOR_DATA|2,2,2,1,1,0;");	
+//        send("SENSOR_DATA|1,1,1,1,1,0;");
+//        send("SENSOR_DATA|0,0,0,1,1,0;");
+//        send("SENSOR_DATA|0,0,0,1,1,0;");
 		
 		String message = receive();
 		
@@ -113,7 +117,7 @@ public class RequestHandler extends Thread {
 	}
 
     public void sendWayPoint() {
-    	
+    	send("WP|3,3;");
     }
 
     // @Override

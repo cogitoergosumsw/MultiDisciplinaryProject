@@ -40,6 +40,7 @@ public class ServerSim {
                 RequestHandler requestHandler = new RequestHandler(socket);
                 //requestHandler.start();
                 
+             //   requestHandler.sendWayPoint();
                 requestHandler.sendStartMsg();
 //                try {
 //					Thread.sleep(5000);

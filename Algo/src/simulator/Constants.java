@@ -9,7 +9,7 @@ public class Constants{
 //    public static final int MAP_COL = 15;
 //	
 	
-	
+
     public static final int MAP_ROW = 20;
     public static final int MAP_COL = 15;
 

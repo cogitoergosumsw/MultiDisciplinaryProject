@@ -39,8 +39,8 @@ public class Simulator{
     private static JFrame mainFrame;
     private static JPanel mapPanel, buttonPanel, textPanel;
     public static JTextArea textArea;
-//    public static boolean realRun = true;
-    public static boolean realRun = false;
+    public static boolean realRun = true;
+//    public static boolean realRun = false;
     private static Robot bot;
     private static Map exploredMap = null;
     private static Map realMap = null;
@@ -194,8 +194,8 @@ public class Simulator{
 	private static void setWayPoint(String msg) {
 		
 		// clear previously set way point if any 
-		for (int i = 0; i < Constants.GOAL_ROW; i++){
-			for (int j = 0; i < Constants.GOAL_COL; j ++){
+		for (int i = 0; i < Constants.MAP_ROW; i++){
+			for (int j = 0; j < Constants.MAP_COL; j ++){
 				exploredMap.grid[i][j].setIsNotWayPoint();
 			}
 		}
@@ -217,13 +217,7 @@ public class Simulator{
     
 	private static void setWayPoint(int row, int col) {
 	
-		exploredMap.grid[row][col].setIsWayPoint();
-               
-        wayPoint = new Cell(row, col);
-       
-        CardLayout cl = ((CardLayout) mapPanel.getLayout());
-     	cl.show(mapPanel, "EXPLORED_MAP");
-     	exploredMap.repaint(); 
+		setWayPoint(CommMgr.WAYPOINT_DATA + "|" + row + "," + col );
 	}
 	
     /**
