@@ -48,7 +48,7 @@ public class Simulator{
     private static Cell wayPoint = null;
     public static boolean explorationDone = false;
     public static boolean fastestPathDone = false;
-    private static int timeLimit = 3600;            
+    private static int timeLimit = 3000;            
     private static int coverageLimit = Constants.MAP_SIZE;  
     
 //    private static SwingWorker thread_exploration;
@@ -111,11 +111,7 @@ public class Simulator{
 					
 				//comm.sendMsg(MOVEMENT.CALIBRATE,CommMgr.MOVE);
 				new Exploration().execute();   
-					
-				 //debug
-//				coverageLimit = 81;
-//				new CoverageExploration().execute();   
-//				
+									
 	    	}	
 		}
 		

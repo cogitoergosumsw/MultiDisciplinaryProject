@@ -16,7 +16,7 @@ import simulator.Constants;
 public class Map extends JPanel{    
     public Cell[][] grid;
     private Robot bot;
-
+    
     public Map(Robot bot){
     	this.bot = bot;
         grid  =  new Cell[Constants.MAP_ROW][Constants.MAP_COL];
@@ -83,6 +83,7 @@ public class Map extends JPanel{
             return;
 
         grid[row][col].setIsObstacle();
+        grid[row][col].resetClearByLeftOrRightSensorCount();
 
         if (row >= 1) {
         	if (grid[row - 1][col].getIsExplored())	
@@ -284,5 +285,23 @@ public class Map extends JPanel{
         }
         return result;
     }
+
+
+    /**
+     * only clear the obstacle if cleared by left or right sensor twice 
+     * */
+	public void clearObstacleByLeftOrRightSensor(int row, int col) {
+		
+		grid[row][col].incrementClearByLeftOrRightSensorCount();
+		
+		if (grid[row][col].getClearByLeftOrRightSensorCount() == 2){
+			grid[row][col].resetClearByLeftOrRightSensorCount();
+			clearObstacleCell(row, col);			
+		}
+	
+	}
+	
+	
+	
     
 }

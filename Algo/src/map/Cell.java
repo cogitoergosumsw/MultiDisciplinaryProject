@@ -14,6 +14,7 @@ public class Cell {
     private boolean isExplored = false;
     private boolean isTrail = false;
     private boolean isWayPoint = false;
+	private int clearByLeftOrRightSensorCount = 0;
 
     public Cell(int row, int col) {
         this.row = row;
@@ -100,4 +101,15 @@ public class Cell {
 		
 	}
 	
+	public int getClearByLeftOrRightSensorCount(){
+		return this.clearByLeftOrRightSensorCount;
+	}
+	
+	public void incrementClearByLeftOrRightSensorCount(){
+		clearByLeftOrRightSensorCount++;
+	}
+	
+	public void resetClearByLeftOrRightSensorCount(){
+		clearByLeftOrRightSensorCount = 0;
+	}
 }

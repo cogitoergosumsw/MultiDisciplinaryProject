@@ -121,21 +121,8 @@ public class Sensor {
      */
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
 
+
     	
-//    	// sensor reading gives 0 if there's no obstacle 
-//    	if (sensorVal == 0) 
-//    		 
-
-//       // If above fails, check if starting point is valid for sensors with lowerRange > 1.
-//        for (int i = 1; i < this.lowerRange; i++) {
-//            int row = this.sensorPosRow + (rowInc * i);
-//            int col = this.sensorPosCol + (colInc * i);
-//
-//            if (!exploredMap.checkValidCoordinates(row, col)) return;
-//            if (exploredMap.getCell(row, col).getIsObstacle()) return;
-//        }
-
-        // Update map according to sensor's value.
         for (int i = this.lowerRange; i <= this.upperRange; i++) {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
@@ -145,17 +132,32 @@ public class Sensor {
 
             exploredMap.getCell(row, col).setIsExplored();
       
+            
             if (sensorVal == i) {
-                exploredMap.setObstacleCell(row, col);
+        		exploredMap.setObstacleCell(row, col);
                 exploredMap.repaint(); //debug
                 break;
+                
             } else if (exploredMap.getCell(row, col).getIsObstacle()) {
-            	// clear previously set obstacle cells if sensors detect no obstacle
-            	if (id.equals("SSFront1") || id.equals("SSFront2") || id.equals("SSFront3")){ 
-            		exploredMap.clearObstacleCell(row, col);
+            	// clear previously set obstacles if sensors detect no obstacle 
+            	
+            	if (id.equals("SSLeft1") || id.equals("SSLeft1") || id.equals("SLRight")){
+            		exploredMap.clearObstacleByLeftOrRightSensor(row, col);
             		exploredMap.repaint(); //debug
-            	}
+            		
+            	} else if (id.equals("SSFront1") || id.equals("SSFront2") || id.equals("SSFront3")) {
+            		 exploredMap.clearObstacleCell(row, col);
+                     exploredMap.repaint(); //debug
+                     
+            	}	
             }
+            
+            
+            
+            
+            
+            
+            
            
         }
     }

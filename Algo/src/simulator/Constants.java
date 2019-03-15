@@ -7,11 +7,11 @@ package simulator;
 public class Constants{
 //    public static final int MAP_ROW = 20;
 //    public static final int MAP_COL = 15;
-//	
+	
 	
 
-    public static final int MAP_ROW = 20;
-    public static final int MAP_COL = 15;
+    public static final int MAP_ROW = 6;
+    public static final int MAP_COL = 12;
 
 	
 	public static final int GOAL_ROW = MAP_ROW - 2;
@@ -24,3 +24,5 @@ public class Constants{
 
     
 }
+
+

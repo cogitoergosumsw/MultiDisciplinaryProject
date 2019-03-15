@@ -130,16 +130,17 @@ public class ExplorationAlgo {
             
             
             //TODO remove this , bot stops when it goes back to the starting zone
-            if (bot.getRobotPosRow() == startR && bot.getRobotPosCol() == startC) {
+            if (bot.getRobotPosRow() == startR && bot.getRobotPosCol() == startC && bot.getTouchedGoal() ) {
 //                if (areaExplored != Constants.MAP_SIZE){
 //                	exploreUnexploredArea();
 //                }
+            	System.out.print("robot has reached starting zone again, stops exploring");
                 break;          	      
             }
             moveCount ++ ; 
         } while (areaExplored < coverageLimit && System.currentTimeMillis() < endTime);
     	
-    	
+    	System.out.println("areaExplored = " + areaExplored + " , systemtime = " + System.currentTimeMillis() + "endtime = " + endTime);
         goHome();
 
         
@@ -226,43 +227,48 @@ public class ExplorationAlgo {
     }
     
     
+    //TODO
+    
+    
     private void goToNearestExploredNearWall(){
-    	
-    	Cell  nearestExploredNearWall = nearestExploredNearWall();
-    	
-    	// if there is no explored cell near wall, then go to the explored cell next to nearest unexplored cell
-    	if (nearestExploredNearWall == null){
-    		goToNearestUnexplored(bot.getCell());
-    		return;
-    	}
-    	
-    	
-    	Cell nearestExplored = nearestExplored(nearestExploredNearWall);
-    	System.out.println("nearest explored cell next to wall is : " + nearestExploredNearWall.toString());
-    	
-    	
-    	System.out.println( "goint to cell :" + nearestExplored.toString());
-    	
-
-    	if (!bot.getRealBot()){
-    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
-    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol());  
-    	} else {
-    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, bot, false);      
-    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol()); 
-    	}
+//    	
+//    	Cell  nearestExploredNearWall = nearestExploredNearWall();
+//    	
+//    	// if there is no explored cell near wall, then go to the explored cell next to nearest unexplored cell
+//    	if (nearestExploredNearWall == null){
+//    		goToNearestUnexplored(bot.getCell());
+//    		return;
+//    	}
+//    	
+//    	
+//    	Cell nearestExplored = nearestExplored(nearestExploredNearWall);
+//    	System.out.println("nearest explored cell next to wall is : " + nearestExploredNearWall.toString());
+//    	
+//    	
+//    	System.out.println( "goint to cell :" + nearestExplored.toString());
+//    	
+//
+//    	if (!bot.getRealBot()){
+//    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
+//    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol());  
+//    	} else {
+//    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, bot, false);      
+//    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol()); 
+//    	}
     	
     	
     	// if it's not really next to a wall, then move forward until it cannot 
+
+    	
     	while(lookForward()){
-    		bot.move(MOVEMENT.FORWARD);
+    		moveBot(MOVEMENT.FORWARD);
     		System.out.println("moving to :" + bot.getCell().toString());
     	}
     	
     	
     	// keep turning left until it cannot anymore 
     	while (lookLeft()){
-    		bot.move(MOVEMENT.LEFT);
+    		moveBot(MOVEMENT.LEFT);
     		System.out.println("turning left");
     	}
     	
@@ -328,8 +334,10 @@ public class ExplorationAlgo {
             }
             numberOfContinuousLeftTurn = 0;
         } else {
+        	
             moveBot(MOVEMENT.LEFT);
             moveBot(MOVEMENT.LEFT);
+            
             numberOfContinuousLeftTurn = 0;
             moveCount++;
         }

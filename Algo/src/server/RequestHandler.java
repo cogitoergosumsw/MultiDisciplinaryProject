@@ -76,8 +76,8 @@ public class RequestHandler extends Thread {
 		send("SENSOR_DATA|1,1,1,1,1,0;");	
 		send("SENSOR_DATA|0,0,0,1,1,0;");
 		send("SENSOR_DATA|0,0,0,1,1,0;");
-		send("SENSOR_DATA|0,0,0,0,0,0;");
-		send("SENSOR_DATA|0,0,0,0,0,0;");
+//		send("SENSOR_DATA|0,0,0,0,0,0;");
+//		send("SENSOR_DATA|0,0,0,0,0,0;");
 		
 		
 //		send("SENSOR_DATA|3,3,3,2,2,0;");	
