@@ -131,7 +131,7 @@ public class Sensor {
             	continue;
 
             exploredMap.getCell(row, col).setIsExplored();
-      
+//      System.out.println(exploredMap.getCell(row, col).getIsObstacle());
             
             if (sensorVal == i) {
         		exploredMap.setObstacleCell(row, col);
@@ -141,7 +141,7 @@ public class Sensor {
             } else if (exploredMap.getCell(row, col).getIsObstacle()) {
             	// clear previously set obstacles if sensors detect no obstacle 
             	
-            	if (id.equals("SSLeft1") || id.equals("SSLeft1") || id.equals("SLRight")){
+            	if (id.equals("SSLeft1") || id.equals("SSLeft2") || id.equals("SLRight")){
             		exploredMap.clearObstacleByLeftOrRightSensor(row, col);
             		exploredMap.repaint(); //debug
             		

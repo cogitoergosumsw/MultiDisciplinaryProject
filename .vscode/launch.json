@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ServerSim",
+            "request": "launch",
+            "mainClass": "server.ServerSim",
+            "projectName": "MdpAAAA"
+        }
+    ]
+}

@@ -132,21 +132,21 @@ public class Map extends JPanel{
 
         //clear virtual wall cells around the obstacle, if it is valid and at the edge of the arena
         
-        if (!isVirtualWallAroundEdge(row - 1 , col) && checkValidCoordinates(row - 1 , col))
+        if (!isVirtualWallAroundEdge(row - 1 , col) && checkValidCoordinates(row - 1 , col) && !checkIsVirtualWall(row -1 , col))
         	grid[row - 1][col].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row + 1, col) && checkValidCoordinates(row + 1, col))
+        if (!isVirtualWallAroundEdge(row + 1, col) && checkValidCoordinates(row + 1, col) && !checkIsVirtualWall(row -1 , col))
         	grid[row + 1][col].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row, col - 1) && checkValidCoordinates(row, col - 1))
+        if (!isVirtualWallAroundEdge(row, col - 1) && checkValidCoordinates(row, col - 1) && !checkIsVirtualWall(row -1 , col))
         	grid[row][col - 1].setIsNotVirtualWall();             
-        if (!isVirtualWallAroundEdge(row, col + 1) && checkValidCoordinates(row, col + 1))
+        if (!isVirtualWallAroundEdge(row, col + 1) && checkValidCoordinates(row, col + 1) && !checkIsVirtualWall(row -1 , col))
         	grid[row][col + 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row - 1, col - 1) && checkValidCoordinates(row - 1, col - 1))
+        if (!isVirtualWallAroundEdge(row - 1, col - 1) && checkValidCoordinates(row - 1, col - 1) && !checkIsVirtualWall(row -1 , col))
         	grid[row - 1][col - 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row - 1, col + 1) && checkValidCoordinates(row - 1, col + 1))
+        if (!isVirtualWallAroundEdge(row - 1, col + 1) && checkValidCoordinates(row - 1, col + 1) && !checkIsVirtualWall(row -1 , col))
         	grid[row - 1][col + 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row + 1, col - 1) && checkValidCoordinates(row + 1, col - 1))
+        if (!isVirtualWallAroundEdge(row + 1, col - 1) && checkValidCoordinates(row + 1, col - 1) && !checkIsVirtualWall(row -1 , col))
         	grid[row + 1][col - 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row + 1, col + 1) && checkValidCoordinates(row + 1, col + 1))
+        if (!isVirtualWallAroundEdge(row + 1, col + 1) && checkValidCoordinates(row + 1, col + 1) && !checkIsVirtualWall(row -1 , col))
         	grid[row + 1][col + 1].setIsNotVirtualWall(); 
     
 }
@@ -302,6 +302,31 @@ public class Map extends JPanel{
 	}
 	
 	
-	
+	public boolean checkIsVirtualWall(int row, int col){
+		if (isVirtualWallAroundEdge(row, col)) 
+			return true;
+		// check if there is any obstacle around the 4 sides and 4 corners of this cell
+		
+		  if ( checkValidCoordinates(row - 1 , col) && getCell(row, col).getIsObstacle() )
+	        	return true;
+	        if (checkValidCoordinates(row + 1, col) && getCell(row, col).getIsObstacle())
+	        	return true;
+	        if (checkValidCoordinates(row, col - 1) && getCell(row, col).getIsObstacle())
+	        	return true;           
+	        if (checkValidCoordinates(row, col + 1) && getCell(row, col).getIsObstacle())
+	        	return true;
+	        if (checkValidCoordinates(row - 1, col - 1) && getCell(row, col).getIsObstacle())
+	        	return true; 
+	        if (checkValidCoordinates(row - 1, col + 1) && getCell(row, col).getIsObstacle())
+	        	return true; 
+	        if (checkValidCoordinates(row + 1, col - 1) && getCell(row, col).getIsObstacle())
+	        	return true; 
+	        if (checkValidCoordinates(row + 1, col + 1) && getCell(row, col).getIsObstacle())
+	        	return true;
+	        
+	        
+	       return false;
+		
+	}
     
 }

@@ -232,38 +232,38 @@ public class ExplorationAlgo {
     
     private void goToNearestExploredNearWall(){
 //    	
-//    	Cell  nearestExploredNearWall = nearestExploredNearWall();
-//    	
-//    	// if there is no explored cell near wall, then go to the explored cell next to nearest unexplored cell
-//    	if (nearestExploredNearWall == null){
-//    		goToNearestUnexplored(bot.getCell());
-//    		return;
-//    	}
-//    	
-//    	
-//    	Cell nearestExplored = nearestExplored(nearestExploredNearWall);
-//    	System.out.println("nearest explored cell next to wall is : " + nearestExploredNearWall.toString());
-//    	
-//    	
-//    	System.out.println( "goint to cell :" + nearestExplored.toString());
-//    	
-//
-//    	if (!bot.getRealBot()){
-//    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
-//    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol());  
-//    	} else {
-//    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, bot, false);      
-//    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol()); 
-//    	}
+    	Cell  nearestExploredNearWall = nearestExploredNearWall();
+    	
+    	// if there is no explored cell near wall, then go to the explored cell next to nearest unexplored cell
+    	if (nearestExploredNearWall == null){
+    		goToNearestUnexplored(bot.getCell());
+    		return;
+    	}
+    	
+    	
+    	Cell nearestExplored = nearestExplored(nearestExploredNearWall);
+    	System.out.println("nearest explored cell next to wall is : " + nearestExploredNearWall.toString());
+    	
+    	
+    	System.out.println( "goint to cell :" + nearestExplored.toString());
+    	
+
+    	if (!bot.getRealBot()){
+    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, realMap, bot, false);     
+    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol());  
+    	} else {
+    		FastestPathAlgo goToNearestExplored = new FastestPathAlgo(exploredMap, bot, false);      
+    		goToNearestExplored.runFastestPath( nearestExplored.getRow(),  nearestExplored.getCol()); 
+    	}
     	
     	
     	// if it's not really next to a wall, then move forward until it cannot 
 
     	
-    	while(lookForward()){
-    		moveBot(MOVEMENT.FORWARD);
-    		System.out.println("moving to :" + bot.getCell().toString());
-    	}
+//    	while(lookForward()){
+//    		moveBot(MOVEMENT.FORWARD);
+//    		System.out.println("moving to :" + bot.getCell().toString());
+//    	}
     	
     	
     	// keep turning left until it cannot anymore 
@@ -317,7 +317,7 @@ public class ExplorationAlgo {
             }
             numberOfContinuousLeftTurn++;
             
-            if ( numberOfContinuousLeftTurn == 3){
+            if ( numberOfContinuousLeftTurn == 4){
             	numberOfContinuousLeftTurn = 0;
             	goToNearestExploredNearWall();
             	//goToNearestUnexplored(bot.getCell());
