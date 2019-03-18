@@ -359,5 +359,8 @@ public class Robot{
 	public Cell getCell() {
 		return new Cell(this.getRobotPosRow(), this.getRobotPosCol());
 	}
+	
+	
+	
     
 }

@@ -508,75 +508,83 @@ public class FastestPathAlgo {
 		
 	}
 	
-	/**
-	 * return true if there are at least 2 obstacles on the left or front 
-	 * */
-	
-	public boolean canCalibrate(Robot bot){
-		int row = bot.getRobotPosRow();
-		int col = bot.getRobotPosCol();
-		DIRECTION dir = bot.getRobotCurDir();
-		int blockInFront = 0; // need at least 2 blocks in front to calibrate 
-		
-		// if in goal zone , no need to calibrate
-		if (row >= 17 && col >= 12) return false;
-		
-		
+
+	   /**
+     * return true is there are 3 blocks in front or 3 blocks on the left
+     * */
+    private boolean canCalibrate(Robot bot){
+    	int row = bot.getRobotPosRow();
+    	int col = bot.getRobotPosCol();
+    	
+    	DIRECTION dir= bot.getRobotCurDir();
+    	
+    	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
+
 		switch(dir){
 		case NORTH:
 			// left wall
-			if (exploredMap.checkIsVirtualWall(row + 1, col - 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2) && checkIsObstacleOrBorderWall(row - 1, col - 2))
 				return true;
-			
+
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row + 1, col)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1)) blockInFront++;
 			if (blockInFront >=2) 
 				return true;
+			break;
 			
 			
 		case SOUTH:
 			// left wall
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col + 1))
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2) && checkIsObstacleOrBorderWall(row + 1, col + 2))
 				return true;
 			
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1)) blockInFront++;
 			if (blockInFront >=2) 
 				return true;
-			
+			break;
 		
 		case EAST:
-			if (exploredMap.checkIsVirtualWall(row + 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col - 1))
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1) && checkIsObstacleOrBorderWall(row + 2, col - 1))
 				return true;
 			
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row, col + 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 1, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2)) blockInFront++;
 			if (blockInFront >=2) 
 				return true;		
-			
+			break;
 		
 		case WEST:
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1) && checkIsObstacleOrBorderWall(row - 2, col - 1))
 				return true;
 			
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col - 2)) blockInFront++;
 			if (blockInFront >=2) 
-				return true;	
-		
-			
+				return true;
+			break;
 		}
-		
-		
+	
 		return false;
-	}
-		
+    	
+    }
+    
+    public boolean checkIsObstacleOrBorderWall(int row, int col){
+    	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL)
+    		return true;
+    	
+    	if (exploredMap.isObstacleCell(row, col)) 
+    		return true;
+
+    	return false;
+    }
+
 }

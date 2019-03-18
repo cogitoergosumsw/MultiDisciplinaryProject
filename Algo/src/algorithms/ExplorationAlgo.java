@@ -129,6 +129,7 @@ public class ExplorationAlgo {
         		
              }
     		nextMove(); 
+    		System.out.println(canCalibrate(bot));
             areaExplored = exploredMap.calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
             
@@ -146,9 +147,6 @@ public class ExplorationAlgo {
     	
     	System.out.println("areaExplored = " + areaExplored + " , systemtime = " + System.currentTimeMillis() + "endtime = " + endTime);
         goHome();
-
-        moveBot(MOVEMENT.CALIBRATE);
-        
         
     }
     /**
@@ -467,15 +465,21 @@ public class ExplorationAlgo {
         System.out.println(", " + areaExplored + " Cells");
         System.out.println((System.currentTimeMillis() - startTime) / 1000 + " Seconds");
 
-        //TODO calibrate after going back to starting position     
-//        if (bot.getRealBot()) {
-//            turnBotDirection(DIRECTION.WEST);
-//            moveBot(MOVEMENT.CALIBRATE);
-//            turnBotDirection(DIRECTION.SOUTH);
-//            moveBot(MOVEMENT.CALIBRATE);
-//            turnBotDirection(DIRECTION.WEST);
-//            moveBot(MOVEMENT.CALIBRATE);
-//        }
+        // turn the robot to face north after arriving at the start zone
+        if (bot.getRealBot()) {
+        	if (bot.getRobotCurDir() == DIRECTION.WEST){
+        		moveBot(MOVEMENT.CALIBRATE);
+        		moveBot(MOVEMENT.RIGHT);                
+        	} else if (bot.getRobotCurDir() == DIRECTION.SOUTH){    
+        		moveBot(MOVEMENT.CALIBRATE);
+        		moveBot(MOVEMENT.RIGHT);
+        		moveBot(MOVEMENT.CALIBRATE);
+        		moveBot(MOVEMENT.RIGHT);
+        	} else{
+        		moveBot(MOVEMENT.CALIBRATE);
+        	}
+        		
+        }
        
         
         // TODO ??? change to checking if bot is facing north when starting fastest path
@@ -577,21 +581,21 @@ public class ExplorationAlgo {
     /**
      * Returns a possible direction for robot calibration or null, otherwise.
      */
-    private DIRECTION getCalibrationDirection() {
-        DIRECTION origDir = bot.getRobotCurDir();
-        DIRECTION dirToCheck;
-
-        dirToCheck = DIRECTION.getNext(origDir);                    // right turn
-        if (canCalibrateOnTheSpot(dirToCheck)) return dirToCheck;
-
-        dirToCheck = DIRECTION.getPrevious(origDir);                // left turn
-        if (canCalibrateOnTheSpot(dirToCheck)) return dirToCheck;
-
-        dirToCheck = DIRECTION.getPrevious(dirToCheck);             // u turn
-        if (canCalibrateOnTheSpot(dirToCheck)) return dirToCheck;
-
-        return null;
-    }
+//    private DIRECTION getCalibrationDirection() {
+//        DIRECTION origDir = bot.getRobotCurDir();
+//        DIRECTION dirToCheck;
+//
+//        dirToCheck = DIRECTION.getNext(origDir);                    // right turn
+//        if (canCalibrateOnTheSpot(dirToCheck)) return dirToCheck;
+//
+//        dirToCheck = DIRECTION.getPrevious(origDir);                // left turn
+//        if (canCalibrateOnTheSpot(dirToCheck)) return dirToCheck;
+//
+//        dirToCheck = DIRECTION.getPrevious(dirToCheck);             // u turn
+//        if (canCalibrateOnTheSpot(dirToCheck)) return dirToCheck;
+//
+//        return null;
+//    }
 
     /**
      * Turns the bot in the needed direction and sends the CALIBRATE movement. Once calibrated, the bot is turned back
@@ -608,21 +612,21 @@ public class ExplorationAlgo {
     /**
      * Turns the robot to the required direction.
      */
-    private void turnBotDirection(DIRECTION targetDir) {
-        int numOfTurn = Math.abs(bot.getRobotCurDir().ordinal() - targetDir.ordinal());
-        if (numOfTurn > 2) numOfTurn = numOfTurn % 2;
-
-        if (numOfTurn == 1) {
-            if (DIRECTION.getNext(bot.getRobotCurDir()) == targetDir) {
-                moveBot(MOVEMENT.RIGHT);
-            } else {
-                moveBot(MOVEMENT.LEFT);
-            }
-        } else if (numOfTurn == 2) {
-            moveBot(MOVEMENT.RIGHT);
-            moveBot(MOVEMENT.RIGHT);
-        }
-    }
+//    private void turnBotDirection(DIRECTION targetDir) {
+//        int numOfTurn = Math.abs(bot.getRobotCurDir().ordinal() - targetDir.ordinal());
+//        if (numOfTurn > 2) numOfTurn = numOfTurn % 2;
+//
+//        if (numOfTurn == 1) {
+//            if (DIRECTION.getNext(bot.getRobotCurDir()) == targetDir) {
+//                moveBot(MOVEMENT.RIGHT);
+//            } else {
+//                moveBot(MOVEMENT.LEFT);
+//            }
+//        } else if (numOfTurn == 2) {
+//            moveBot(MOVEMENT.RIGHT);
+//            moveBot(MOVEMENT.RIGHT);
+//        }
+//    }
    
     /**
      * return true is there are 3 blocks in front or 3 blocks on the left
@@ -634,76 +638,71 @@ public class ExplorationAlgo {
     	DIRECTION dir= bot.getRobotCurDir();
     	
     	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
-		
-		// if in goal zone , no need to calibrate
-		if (row >= 17 && col >= 12) return false;
-		
-		
+
 		switch(dir){
 		case NORTH:
 			// left wall
-			if (exploredMap.checkIsVirtualWall(row + 1, col - 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2) && checkIsObstacleOrBorderWall(row - 1, col - 2))
 				return true;
 
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row + 1, col)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1)) blockInFront++;
 			if (blockInFront >=2) 
 				return true;
+			break;
 			
 			
 		case SOUTH:
 			// left wall
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col + 1))
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2) && checkIsObstacleOrBorderWall(row + 1, col + 2))
 				return true;
 			
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1)) blockInFront++;
 			if (blockInFront >=2) 
 				return true;
-			
+			break;
 		
 		case EAST:
-			if (exploredMap.checkIsVirtualWall(row + 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col - 1))
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1) && checkIsObstacleOrBorderWall(row + 2, col - 1))
 				return true;
 			
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row, col + 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 1, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2)) blockInFront++;
 			if (blockInFront >=2) 
 				return true;		
-			
+			break;
 		
 		case WEST:
-			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1) && checkIsObstacleOrBorderWall(row - 2, col - 1))
 				return true;
 			
 			// front wall 			
-			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row, col - 1)) blockInFront++;
-			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col - 2)) blockInFront++;
 			if (blockInFront >=2) 
-				return true;	
-		
-			
+				return true;
+			break;
 		}
-		
-		
+	
 		return false;
     	
     }
     
-    
     public boolean checkIsObstacleOrBorderWall(int row, int col){
+    	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL)
+    		return true;
+    	
     	if (exploredMap.isObstacleCell(row, col)) 
     		return true;
-    	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL) 
-    	
-    		
+
     	return false;
     }
     
