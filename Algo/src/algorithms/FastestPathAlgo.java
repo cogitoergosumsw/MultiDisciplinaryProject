@@ -238,7 +238,7 @@ public class FastestPathAlgo {
 	}
 
 	private String executePath(Stack<Cell> path, int goalRow, int goalCol) {
-
+		int stepSinceLastCalibrate = 0;
         StringBuilder outputString = new StringBuilder();
         ArrayList<MOVEMENT> movements = new ArrayList<>();
         DIRECTION targetDir;
@@ -271,7 +271,16 @@ public class FastestPathAlgo {
 
 	         tempBot.move(m);
 	         movements.add(m);
-	         outputString.append(MOVEMENT.print(m));	
+	         outputString.append(MOVEMENT.print(m));
+	         
+	         // add calibration if possible 
+	         stepSinceLastCalibrate ++;
+	         if (canCalibrate(tempBot) & stepSinceLastCalibrate >= 3){
+	        	 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
+	        	 stepSinceLastCalibrate = 0;
+	         }
+	         
+	         
 		}
 		
 		if (!bot.getRealBot() || explorationMode) {
@@ -329,17 +338,18 @@ public class FastestPathAlgo {
         
         if (bot.getRealBot()){
         	String fpStr = outputString.toString().toLowerCase();
-        	String fpStrWithC="";
-        	for (int i = 0; i < fpStr.length(); i++){
-        		fpStrWithC += fpStr.substring(i, i+1);
-        		if (i%3 == 0) 
-        			fpStrWithC += "c" ;
-        	}
+//        	String fpStrWithC="";
+//        	for (int i = 0; i < fpStr.length(); i++){
+//        		fpStrWithC += fpStr.substring(i, i+1);
+//        		if (i%3 == 0) 
+//        			fpStrWithC += "c" ;
+//        	}
 
-        	CommMgr.getCommMgr().sendMsg(fpStrWithC, CommMgr.MOVE);
+        	CommMgr.getCommMgr().sendMsg(fpStr, CommMgr.MOVE);
         	
         }
         
+        System.out.println(outputString.toString());
         return outputString.toString();
 	}
 	
@@ -498,6 +508,75 @@ public class FastestPathAlgo {
 		
 	}
 	
+	/**
+	 * return true if there are at least 2 obstacles on the left or front 
+	 * */
 	
-	
+	public boolean canCalibrate(Robot bot){
+		int row = bot.getRobotPosRow();
+		int col = bot.getRobotPosCol();
+		DIRECTION dir = bot.getRobotCurDir();
+		int blockInFront = 0; // need at least 2 blocks in front to calibrate 
+		
+		// if in goal zone , no need to calibrate
+		if (row >= 17 && col >= 12) return false;
+		
+		
+		switch(dir){
+		case NORTH:
+			// left wall
+			if (exploredMap.checkIsVirtualWall(row + 1, col - 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row + 1, col)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			
+			
+		case SOUTH:
+			// left wall
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col + 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			
+		
+		case EAST:
+			if (exploredMap.checkIsVirtualWall(row + 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col - 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row, col + 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;		
+			
+		
+		case WEST:
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;	
+		
+			
+		}
+		
+		
+		return false;
+	}
+		
 }

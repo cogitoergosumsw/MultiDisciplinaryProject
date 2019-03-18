@@ -102,6 +102,7 @@ public class ExplorationAlgo {
         
         if (bot.getRealBot()) {
             CommMgr.getCommMgr().sendMsg(CommMgr.EX_DONE);
+            
         }
     }
 
@@ -116,13 +117,16 @@ public class ExplorationAlgo {
      * @TODO move 3 steps if no obstacle in front 
      * */
     private void explorationLoop(int startR, int startC) {
-        moveCount = 0;
+    	CommMgr commMgr = CommMgr.getCommMgr();
+    	
+    	moveCount = 0;
     	do {
     		//TODO send calibration 
     		System.out.println("moveCount = " + moveCount);
         	if (bot.getRealBot() && moveCount % 3 == 0){
-        		moveBot(MOVEMENT.CALIBRATE);
-        		CommMgr commMgr = CommMgr.getCommMgr();
+        		if (canCalibrate(bot))
+        			moveBot(MOVEMENT.CALIBRATE);
+        		
              }
     		nextMove(); 
             areaExplored = exploredMap.calculateAreaExplored();
@@ -143,6 +147,8 @@ public class ExplorationAlgo {
     	System.out.println("areaExplored = " + areaExplored + " , systemtime = " + System.currentTimeMillis() + "endtime = " + endTime);
         goHome();
 
+        moveBot(MOVEMENT.CALIBRATE);
+        
         
     }
     /**
@@ -591,13 +597,13 @@ public class ExplorationAlgo {
      * Turns the bot in the needed direction and sends the CALIBRATE movement. Once calibrated, the bot is turned back
      * to its original direction.
      */
-    private void calibrateBot(DIRECTION targetDir) {
-        DIRECTION origDir = bot.getRobotCurDir();
-
-        turnBotDirection(targetDir);
-        moveBot(MOVEMENT.CALIBRATE);
-        turnBotDirection(origDir);
-    }
+//    private void calibrateBot(DIRECTION targetDir) {
+//        DIRECTION origDir = bot.getRobotCurDir();
+//
+//        turnBotDirection(targetDir);
+//        moveBot(MOVEMENT.CALIBRATE);
+//        turnBotDirection(origDir);
+//    }
 
     /**
      * Turns the robot to the required direction.
@@ -617,8 +623,92 @@ public class ExplorationAlgo {
             moveBot(MOVEMENT.RIGHT);
         }
     }
+   
+    /**
+     * return true is there are 3 blocks in front or 3 blocks on the left
+     * */
+    private boolean canCalibrate(Robot bot){
+    	int row = bot.getRobotPosRow();
+    	int col = bot.getRobotPosCol();
+    	
+    	DIRECTION dir= bot.getRobotCurDir();
+    	
+    	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
+		
+		// if in goal zone , no need to calibrate
+		if (row >= 17 && col >= 12) return false;
+		
+		
+		switch(dir){
+		case NORTH:
+			// left wall
+			if (exploredMap.checkIsVirtualWall(row + 1, col - 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+				return true;
+
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row + 1, col)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			
+			
+		case SOUTH:
+			// left wall
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col + 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			
+		
+		case EAST:
+			if (exploredMap.checkIsVirtualWall(row + 1, col + 1) && exploredMap.checkIsVirtualWall(row + 1, col - 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row + 1, col + 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row, col + 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;		
+			
+		
+		case WEST:
+			if (exploredMap.checkIsVirtualWall(row - 1, col + 1) && exploredMap.checkIsVirtualWall(row - 1, col - 1))
+				return true;
+			
+			// front wall 			
+			if (exploredMap.checkIsVirtualWall(row + 1, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row, col - 1)) blockInFront++;
+			if (exploredMap.checkIsVirtualWall(row - 1, col - 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;	
+		
+			
+		}
+		
+		
+		return false;
+    	
+    }
+    
+    
+    public boolean checkIsObstacleOrBorderWall(int row, int col){
+    	if (exploredMap.isObstacleCell(row, col)) 
+    		return true;
+    	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL) 
+    	
+    		
+    	return false;
+    }
     
 }
+
     
     
     

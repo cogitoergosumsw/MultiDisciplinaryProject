@@ -107,7 +107,7 @@ public class CommMgr {
         try {
             String outputMsg;
             if (msg == null) {
-                outputMsg = msgType + ";\n";
+                outputMsg = msgType + "|;\n";
             } else{
                 outputMsg = msgType + "|" + msg + ";\n";
             }      

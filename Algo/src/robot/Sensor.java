@@ -134,10 +134,12 @@ public class Sensor {
 //      System.out.println(exploredMap.getCell(row, col).getIsObstacle());
             
             if (sensorVal == i) {
-        		exploredMap.setObstacleCell(row, col);
-                exploredMap.repaint(); //debug
-                break;
-                
+//            	if (i <= 2){
+            		exploredMap.setObstacleCell(row, col);
+                    exploredMap.repaint(); //debug
+                    break;
+            	//}
+
             } else if (exploredMap.getCell(row, col).getIsObstacle()) {
             	// clear previously set obstacles if sensors detect no obstacle 
             	
