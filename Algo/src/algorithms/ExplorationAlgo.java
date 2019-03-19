@@ -107,6 +107,25 @@ public class ExplorationAlgo {
     }
 
     /**
+     * initial calibration in the starting zone 
+     * turn 180 degree to face south, calibrate
+     * then turn 90 degree to face west, calibrate 
+     * then turn 90 degree to face north again 
+     */
+    private void initialCalibration(){
+    	
+    	CommMgr.getCommMgr().recvMsg(); // consume the first sensor reading 
+    	moveBot(MOVEMENT.RIGHT);
+    	moveBot(MOVEMENT.RIGHT);
+    	moveBot(MOVEMENT.CALIBRATE);
+    	moveBot(MOVEMENT.RIGHT);
+    	moveBot(MOVEMENT.CALIBRATE);
+    	moveBot(MOVEMENT.RIGHT);
+    
+    }
+    
+    
+    /**
      * Loops through robot movements until one (or more) of the following conditions is met:
      * 1. Robot is back at (r, c)
      * 2. areaExplored > coverageLimit
@@ -119,7 +138,9 @@ public class ExplorationAlgo {
     private void explorationLoop(int startR, int startC) {
     	CommMgr commMgr = CommMgr.getCommMgr();
     	
-    	moveCount = 0;
+    	initialCalibration();
+
+    	moveCount = 1;
     	do {
     		//TODO send calibration 
     		System.out.println("moveCount = " + moveCount);
@@ -129,7 +150,9 @@ public class ExplorationAlgo {
         		
              }
         	exploredMap.setCellsVisitedByBot();
-    		nextMove(); 
+    		
+        	
+        	nextMove(); 
     		System.out.println(canCalibrate(bot));
             areaExplored = exploredMap.calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
@@ -332,6 +355,18 @@ public class ExplorationAlgo {
             numberOfContinuousLeftTurn = 0;
             
         } else if (lookRight()) {
+        	
+        	//?????
+        	// calibrate on both left and front before turning right 
+        	if (canCalibrate(bot)){
+        		moveBot(MOVEMENT.LEFT);
+        		moveBot(MOVEMENT.CALIBRATE);
+        		moveBot(MOVEMENT.RIGHT);
+        		moveBot(MOVEMENT.CALIBRATE);
+        	}
+        	//
+        	
+        	
             moveBot(MOVEMENT.RIGHT);
             if (lookForward()){
             	moveBot(MOVEMENT.FORWARD);
@@ -469,8 +504,11 @@ public class ExplorationAlgo {
         // turn the robot to face north after arriving at the start zone
         if (bot.getRealBot()) {
         	if (bot.getRobotCurDir() == DIRECTION.WEST){
+        		moveBot(MOVEMENT.LEFT); 
         		moveBot(MOVEMENT.CALIBRATE);
-        		moveBot(MOVEMENT.RIGHT);                
+        		moveBot(MOVEMENT.RIGHT); 
+        		moveBot(MOVEMENT.CALIBRATE);
+        		moveBot(MOVEMENT.RIGHT); 
         	} else if (bot.getRobotCurDir() == DIRECTION.SOUTH){    
         		moveBot(MOVEMENT.CALIBRATE);
         		moveBot(MOVEMENT.RIGHT);
@@ -561,23 +599,23 @@ public class ExplorationAlgo {
     /**
      * Checks if the robot can calibrate at its current position given a direction.
      */
-    private boolean canCalibrateOnTheSpot(DIRECTION botDir) {
-        int row = bot.getRobotPosRow();
-        int col = bot.getRobotPosCol();
-
-        switch (botDir) {
-            case NORTH:
-                return exploredMap.getIsObstacleOrWall(row + 2, col - 1) && exploredMap.getIsObstacleOrWall(row + 2, col) && exploredMap.getIsObstacleOrWall(row + 2, col + 1);
-            case EAST:
-                return exploredMap.getIsObstacleOrWall(row + 1, col + 2) && exploredMap.getIsObstacleOrWall(row, col + 2) && exploredMap.getIsObstacleOrWall(row - 1, col + 2);
-            case SOUTH:
-                return exploredMap.getIsObstacleOrWall(row - 2, col - 1) && exploredMap.getIsObstacleOrWall(row - 2, col) && exploredMap.getIsObstacleOrWall(row - 2, col + 1);
-            case WEST:
-                return exploredMap.getIsObstacleOrWall(row + 1, col - 2) && exploredMap.getIsObstacleOrWall(row, col - 2) && exploredMap.getIsObstacleOrWall(row - 1, col - 2);
-        }
-
-        return false;
-    }
+//    private boolean canCalibrateOnTheSpot(DIRECTION botDir) {
+//        int row = bot.getRobotPosRow();
+//        int col = bot.getRobotPosCol();
+//
+//        switch (botDir) {
+//            case NORTH:
+//                return exploredMap.getIsObstacleOrWall(row + 2, col - 1) && exploredMap.getIsObstacleOrWall(row + 2, col) && exploredMap.getIsObstacleOrWall(row + 2, col + 1);
+//            case EAST:
+//                return exploredMap.getIsObstacleOrWall(row + 1, col + 2) && exploredMap.getIsObstacleOrWall(row, col + 2) && exploredMap.getIsObstacleOrWall(row - 1, col + 2);
+//            case SOUTH:
+//                return exploredMap.getIsObstacleOrWall(row - 2, col - 1) && exploredMap.getIsObstacleOrWall(row - 2, col) && exploredMap.getIsObstacleOrWall(row - 2, col + 1);
+//            case WEST:
+//                return exploredMap.getIsObstacleOrWall(row + 1, col - 2) && exploredMap.getIsObstacleOrWall(row, col - 2) && exploredMap.getIsObstacleOrWall(row - 1, col - 2);
+//        }
+//
+//        return false;
+//    }
 
     /**
      * Returns a possible direction for robot calibration or null, otherwise.

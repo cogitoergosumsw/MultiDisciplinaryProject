@@ -196,8 +196,8 @@ public class Map extends JPanel{
                         cellColor = GraphicsConstants.C_FREE;
                 }
                 
-                if (grid[row][col].getIsVisitedByBot())
-                	cellColor = GraphicsConstants.C_VISITED;
+//                if (grid[row][col].getIsVisitedByBot())
+//                	cellColor = GraphicsConstants.C_VISITED;
                 
                 
 
