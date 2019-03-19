@@ -175,6 +175,8 @@ public class Map extends JPanel{
             for (int col = 0; col < Constants.MAP_COL; col++) { 
                 Color cellColor;
                 
+                
+                
                 if (grid[row][col].getIsWayPoint())
                 	cellColor = GraphicsConstants.C_WAYPOINT;
                 else if (grid[row][col].getIsTrail())
@@ -193,6 +195,11 @@ public class Map extends JPanel{
                     else
                         cellColor = GraphicsConstants.C_FREE;
                 }
+                
+//                if (grid[row][col].getIsVisitedByBot())
+//                	cellColor = GraphicsConstants.C_VISITED;
+                
+                
 
                 int cellX = col * GraphicsConstants.CELL_SIZE + GraphicsConstants.CELL_LINE_WEIGHT + GraphicsConstants.MAP_X_OFFSET;
                 int cellY = GraphicsConstants.MAP_H - (row * GraphicsConstants.CELL_SIZE - GraphicsConstants.CELL_LINE_WEIGHT);
@@ -327,6 +334,25 @@ public class Map extends JPanel{
 	        
 	       return false;
 		
+	}
+
+	/**
+	 *  set isVisitedByBot = true for the 9 cells where the robot is currently at 
+	 * */
+	public void setCellsVisitedByBot() {
+		
+		int row = bot.getRobotPosRow();
+		int col = bot.getRobotPosCol();
+		
+		grid[row][col].setIsVisitedByBot();
+		grid[row][col + 1].setIsVisitedByBot();
+		grid[row][col - 1].setIsVisitedByBot();
+		grid[row + 1][col].setIsVisitedByBot();
+		grid[row + 1][col + 1].setIsVisitedByBot();
+		grid[row + 1][col - 1].setIsVisitedByBot();
+		grid[row - 1][col].setIsVisitedByBot();
+		grid[row - 1][col + 1].setIsVisitedByBot();
+		grid[row - 1][col - 1].setIsVisitedByBot();
 	}
     
 }

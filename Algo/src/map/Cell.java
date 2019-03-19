@@ -15,7 +15,9 @@ public class Cell {
     private boolean isTrail = false;
     private boolean isWayPoint = false;
 	private int clearByLeftOrRightSensorCount = 0;
+	private boolean isVisitedByBot = false;
 
+	
     public Cell(int row, int col) {
         this.row = row;
         this.col = col;
@@ -99,6 +101,14 @@ public class Cell {
 	public boolean getIsWayPoint() {
 		return this.isWayPoint;
 		
+	}
+	
+	public void setIsVisitedByBot(){
+		this.isVisitedByBot = true;
+	}
+	
+	public boolean getIsVisitedByBot(){
+		return isVisitedByBot;
 	}
 	
 	public int getClearByLeftOrRightSensorCount(){

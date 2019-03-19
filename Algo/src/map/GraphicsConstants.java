@@ -16,7 +16,7 @@ class GraphicsConstants {
     public static final Color C_ROBOT = Color.RED;
     public static final Color C_ROBOT_DIR = Color.WHITE;
     public static final Color C_VIRTUALWALL = new Color(255,255,204);
-    
+    public static final Color C_VISITED = new Color(205,105,164);
     
     public static final int ROBOT_W = 70;
     public static final int ROBOT_H = 70;

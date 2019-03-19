@@ -120,8 +120,10 @@ public class Sensor {
      * Sets the correct cells to explored and/or obstacle according to the actual sensor value.
      */
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
-
-
+    
+    	
+    	
+    	
     	
         for (int i = this.lowerRange; i <= this.upperRange; i++) {
             int row = this.sensorPosRow + (rowInc * i);
@@ -133,12 +135,13 @@ public class Sensor {
             exploredMap.getCell(row, col).setIsExplored();
 //      System.out.println(exploredMap.getCell(row, col).getIsObstacle());
             
-            if (sensorVal == i) {
-//            	if (i <= 2){
+            if (sensorVal == i) { 	
+            	// if the cell has been visited by the robot, then it cannot be set to obstacle
+            	if (!exploredMap.getCell(row, col).getIsVisitedByBot()){
             		exploredMap.setObstacleCell(row, col);
                     exploredMap.repaint(); //debug
                     break;
-            	//}
+            	}
 
             } else if (exploredMap.getCell(row, col).getIsObstacle()) {
             	// clear previously set obstacles if sensors detect no obstacle 
@@ -173,4 +176,7 @@ public class Sensor {
     	System.out.println(id);
     	
     }
+    
+    
+    
 }

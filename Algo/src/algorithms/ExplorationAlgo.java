@@ -128,6 +128,7 @@ public class ExplorationAlgo {
         			moveBot(MOVEMENT.CALIBRATE);
         		
              }
+        	exploredMap.setCellsVisitedByBot();
     		nextMove(); 
     		System.out.println(canCalibrate(bot));
             areaExplored = exploredMap.calculateAreaExplored();
