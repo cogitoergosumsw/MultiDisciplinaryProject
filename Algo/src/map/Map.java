@@ -132,22 +132,30 @@ public class Map extends JPanel{
 
         //clear virtual wall cells around the obstacle, if it is valid and at the edge of the arena
         
-        if (!isVirtualWallAroundEdge(row - 1 , col) && checkValidCoordinates(row - 1 , col) && !checkIsVirtualWall(row -1 , col))
+        if (!isVirtualWallAroundEdge(row - 1 , col) && checkValidCoordinates(row - 1 , col))
         	grid[row - 1][col].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row + 1, col) && checkValidCoordinates(row + 1, col) && !checkIsVirtualWall(row -1 , col))
+        repaint();
+        if (!isVirtualWallAroundEdge(row + 1, col) && checkValidCoordinates(row + 1, col))
         	grid[row + 1][col].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row, col - 1) && checkValidCoordinates(row, col - 1) && !checkIsVirtualWall(row -1 , col))
-        	grid[row][col - 1].setIsNotVirtualWall();             
-        if (!isVirtualWallAroundEdge(row, col + 1) && checkValidCoordinates(row, col + 1) && !checkIsVirtualWall(row -1 , col))
+        repaint();
+        if (!isVirtualWallAroundEdge(row, col - 1) && checkValidCoordinates(row, col - 1))
+        	grid[row][col - 1].setIsNotVirtualWall();   
+        repaint();
+        if (!isVirtualWallAroundEdge(row, col + 1) && checkValidCoordinates(row, col + 1))
         	grid[row][col + 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row - 1, col - 1) && checkValidCoordinates(row - 1, col - 1) && !checkIsVirtualWall(row -1 , col))
+        repaint();
+        if (!isVirtualWallAroundEdge(row - 1, col - 1) && checkValidCoordinates(row - 1, col - 1))
         	grid[row - 1][col - 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row - 1, col + 1) && checkValidCoordinates(row - 1, col + 1) && !checkIsVirtualWall(row -1 , col))
+        repaint();
+        if (!isVirtualWallAroundEdge(row - 1, col + 1) && checkValidCoordinates(row - 1, col + 1))
         	grid[row - 1][col + 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row + 1, col - 1) && checkValidCoordinates(row + 1, col - 1) && !checkIsVirtualWall(row -1 , col))
+        repaint();
+        if (!isVirtualWallAroundEdge(row + 1, col - 1) && checkValidCoordinates(row + 1, col - 1))
         	grid[row + 1][col - 1].setIsNotVirtualWall(); 
-        if (!isVirtualWallAroundEdge(row + 1, col + 1) && checkValidCoordinates(row + 1, col + 1) && !checkIsVirtualWall(row -1 , col))
+        repaint();
+        if (!isVirtualWallAroundEdge(row + 1, col + 1) && checkValidCoordinates(row + 1, col + 1))
         	grid[row + 1][col + 1].setIsNotVirtualWall(); 
+        repaint();
     
 }
     
