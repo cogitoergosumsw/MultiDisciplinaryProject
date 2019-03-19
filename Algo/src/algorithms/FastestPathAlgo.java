@@ -268,8 +268,11 @@ public class FastestPathAlgo {
 			
 			
 //			 System.out.println("Movement " + MOVEMENT.print(m) + " from (" + tempBot.getRobotPosRow() + ", " + tempBot.getRobotPosCol() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
-
+			
 	         tempBot.move(m);
+	         
+	         exploredMap.setCellsVisitedByBot(tempBot.getRobotPosRow(), tempBot.getRobotPosCol());
+	         
 	         movements.add(m);
 	         outputString.append(MOVEMENT.print(m));
 	         

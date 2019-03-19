@@ -196,8 +196,8 @@ public class Map extends JPanel{
                         cellColor = GraphicsConstants.C_FREE;
                 }
                 
-//                if (grid[row][col].getIsVisitedByBot())
-//                	cellColor = GraphicsConstants.C_VISITED;
+                if (grid[row][col].getIsVisitedByBot())
+                	cellColor = GraphicsConstants.C_VISITED;
                 
                 
 
@@ -340,10 +340,10 @@ public class Map extends JPanel{
 	 *  set isVisitedByBot = true for the 9 cells where the robot is currently at 
 	 * */
 	public void setCellsVisitedByBot() {
-		
-		int row = bot.getRobotPosRow();
-		int col = bot.getRobotPosCol();
-		
+		setCellsVisitedByBot(bot.getRobotPosRow(), bot.getRobotPosCol());		
+	}
+    
+	public void setCellsVisitedByBot(int row, int col){
 		grid[row][col].setIsVisitedByBot();
 		grid[row][col + 1].setIsVisitedByBot();
 		grid[row][col - 1].setIsVisitedByBot();
@@ -354,5 +354,4 @@ public class Map extends JPanel{
 		grid[row - 1][col + 1].setIsVisitedByBot();
 		grid[row - 1][col - 1].setIsVisitedByBot();
 	}
-    
 }
