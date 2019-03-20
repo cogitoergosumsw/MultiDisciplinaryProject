@@ -20,8 +20,8 @@ public class Map extends JPanel{
     public Map(Robot bot){
     	this.bot = bot;
         grid  =  new Cell[Constants.MAP_ROW][Constants.MAP_COL];
-        for (int row = 0; row < grid.length; row++){
-            for (int col = 0; col < grid[0].length; col++){
+        for (int row = 0; row < Constants.MAP_ROW; row++){
+            for (int col = 0; col < Constants.MAP_COL; col++){
                 grid[row][col] = new Cell(row,col);
                 if (row == 0 || row== grid.length-1 || col == 0 || col == grid[0].length-1)
                     grid[row][col].setIsVirtualWall();
@@ -85,80 +85,95 @@ public class Map extends JPanel{
         grid[row][col].setIsObstacle();
         grid[row][col].resetClearByLeftOrRightSensorCount();
 
-        if (row >= 1) {
+        setVirtualWallAroundObstacle(row, col);
+    } 
+    
+    public void setVirtualWallAroundObstacle(int row, int col){
+    	if (row >= 1) {
         	//if (grid[row - 1][col].getIsExplored())	
         		grid[row - 1][col].setIsVirtualWall();            // bottom cell
-        	repaint();
             if (col < Constants.MAP_COL - 1) {
                 //if(grid[row - 1][col + 1].getIsExplored())
                 	grid[row - 1][col + 1].setIsVirtualWall();    // bottom-right cell
             }
-            repaint();
+            
             if (col >= 1) {
             	//if(grid[row - 1][col - 1].getIsExplored())
             		grid[row - 1][col - 1].setIsVirtualWall();    // bottom-left cell
             }
         }
-        repaint();
+        
         if (row < Constants.MAP_ROW - 1) {
         	//if(grid[row + 1][col].getIsExplored())
         		grid[row + 1][col].setIsVirtualWall();            // top cell
-        	repaint();
+        	
             if (col < Constants.MAP_COL - 1) {
             	//if(grid[row + 1][col + 1].getIsExplored())
             	grid[row + 1][col + 1].setIsVirtualWall();    // top-right cell
             }
-            repaint();
+            
             if (col >= 1) {
             	//if(grid[row + 1][col - 1].getIsExplored())
             		grid[row + 1][col - 1].setIsVirtualWall();    // top-left cell
             }
         }
-        repaint();
+        
         if (col >= 1) {
         	//if(grid[row][col - 1].getIsExplored())
         		grid[row][col - 1].setIsVirtualWall();            // left cell
         }
-        repaint();
+        
         if (col < Constants.MAP_COL - 1) {
         	//if(grid[row][col + 1].getIsExplored())
         		grid[row][col + 1].setIsVirtualWall();            // right cell
         } 
-        repaint();
-    } 
+        
+    }
     
+    /**
+     * clear phantom block and clear the virtual walls set around the phantom block 
+     * */
     public void clearObstacleCell(int row, int col){
 
         grid[row][col].setIsNotObstacle();
-
-        //clear virtual wall cells around the obstacle, if it is valid and at the edge of the arena
         
-        if (!isVirtualWallAroundEdge(row - 1 , col) && checkValidCoordinates(row - 1 , col))
-        	grid[row - 1][col].setIsNotVirtualWall(); 
-        repaint();
-        if (!isVirtualWallAroundEdge(row + 1, col) && checkValidCoordinates(row + 1, col))
-        	grid[row + 1][col].setIsNotVirtualWall(); 
-        repaint();
-        if (!isVirtualWallAroundEdge(row, col - 1) && checkValidCoordinates(row, col - 1))
-        	grid[row][col - 1].setIsNotVirtualWall();   
-        repaint();
-        if (!isVirtualWallAroundEdge(row, col + 1) && checkValidCoordinates(row, col + 1))
-        	grid[row][col + 1].setIsNotVirtualWall(); 
-        repaint();
-        if (!isVirtualWallAroundEdge(row - 1, col - 1) && checkValidCoordinates(row - 1, col - 1))
-        	grid[row - 1][col - 1].setIsNotVirtualWall(); 
-        repaint();
-        if (!isVirtualWallAroundEdge(row - 1, col + 1) && checkValidCoordinates(row - 1, col + 1))
-        	grid[row - 1][col + 1].setIsNotVirtualWall(); 
-        repaint();
-        if (!isVirtualWallAroundEdge(row + 1, col - 1) && checkValidCoordinates(row + 1, col - 1))
-        	grid[row + 1][col - 1].setIsNotVirtualWall(); 
-        repaint();
-        if (!isVirtualWallAroundEdge(row + 1, col + 1) && checkValidCoordinates(row + 1, col + 1))
-        	grid[row + 1][col + 1].setIsNotVirtualWall(); 
-        repaint();
+        // clear all virtual walls except around the edge of arena  
+        for (int r = 1; r < Constants.MAP_ROW - 1; r++){
+            for (int c = 1; c < Constants.MAP_COL - 1; c++){
+            	getCell(r, c).setIsNotVirtualWall();     	
+            }
+        }
+            
+        
+        // set virtual walls for all obstacles
+        for (int r = 0; r < Constants.MAP_ROW; r++){
+            for (int c = 0; c < Constants.MAP_COL; c++){
+            	if (getCell(r, c).getIsObstacle()){
+            		setVirtualWallAroundObstacle(r, c);
+            	}
+            }
+            
+        }
+        
+        
     
 }
+    
+
+    /**
+     * only clear the obstacle if cleared by left or right sensor twice 
+     * */
+	public void clearObstacleByLeftOrRightSensor(int row, int col) {
+		
+		grid[row][col].incrementClearByLeftOrRightSensorCount();
+		
+		if (grid[row][col].getClearByLeftOrRightSensorCount() == 2){
+			grid[row][col].resetClearByLeftOrRightSensorCount();
+			clearObstacleCell(row, col);			
+		}
+	
+	}
+	
     
     /**
      * checks if it is cells around on edges of the arena 
@@ -302,21 +317,6 @@ public class Map extends JPanel{
         return result;
     }
 
-
-    /**
-     * only clear the obstacle if cleared by left or right sensor twice 
-     * */
-	public void clearObstacleByLeftOrRightSensor(int row, int col) {
-		
-		grid[row][col].incrementClearByLeftOrRightSensorCount();
-		
-		if (grid[row][col].getClearByLeftOrRightSensorCount() == 2){
-			grid[row][col].resetClearByLeftOrRightSensorCount();
-			clearObstacleCell(row, col);			
-		}
-	
-	}
-	
 	
 	public boolean checkIsVirtualWall(int row, int col){
 		if (isVirtualWallAroundEdge(row, col)) 
@@ -365,15 +365,12 @@ public class Map extends JPanel{
 	}
 
 
-
-
     /**
-     * return true is there are 3 blocks in front or 3 blocks on the left
+     * return true is there are 2 blocks in front or 2 blocks on the left
      * */
     public boolean canCalibrate(Robot bot){
     	return (canCalibrateInFront(bot) || canCalibrateOnLeft(bot)) ;
     }
-    
     
     public boolean canCalibrateInFront(Robot bot){
     	int row = bot.getRobotPosRow();
@@ -428,7 +425,6 @@ public class Map extends JPanel{
     	
     }
 
-    
     public boolean canCalibrateOnLeft(Robot bot){
     	int row = bot.getRobotPosRow();
     	int col = bot.getRobotPosCol();
