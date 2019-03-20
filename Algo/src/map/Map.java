@@ -86,44 +86,45 @@ public class Map extends JPanel{
         grid[row][col].resetClearByLeftOrRightSensorCount();
 
         if (row >= 1) {
-        	if (grid[row - 1][col].getIsExplored())	
+        	//if (grid[row - 1][col].getIsExplored())	
         		grid[row - 1][col].setIsVirtualWall();            // bottom cell
-
+        	repaint();
             if (col < Constants.MAP_COL - 1) {
-                if(grid[row - 1][col + 1].getIsExplored())
+                //if(grid[row - 1][col + 1].getIsExplored())
                 	grid[row - 1][col + 1].setIsVirtualWall();    // bottom-right cell
             }
-
+            repaint();
             if (col >= 1) {
-            	if(grid[row - 1][col - 1].getIsExplored())
+            	//if(grid[row - 1][col - 1].getIsExplored())
             		grid[row - 1][col - 1].setIsVirtualWall();    // bottom-left cell
             }
         }
-
+        repaint();
         if (row < Constants.MAP_ROW - 1) {
-        	if(grid[row + 1][col].getIsExplored())
+        	//if(grid[row + 1][col].getIsExplored())
         		grid[row + 1][col].setIsVirtualWall();            // top cell
-
+        	repaint();
             if (col < Constants.MAP_COL - 1) {
-            	if(grid[row + 1][col + 1].getIsExplored())
+            	//if(grid[row + 1][col + 1].getIsExplored())
             	grid[row + 1][col + 1].setIsVirtualWall();    // top-right cell
             }
-
+            repaint();
             if (col >= 1) {
-            	if(grid[row + 1][col - 1].getIsExplored())
+            	//if(grid[row + 1][col - 1].getIsExplored())
             		grid[row + 1][col - 1].setIsVirtualWall();    // top-left cell
             }
         }
-
+        repaint();
         if (col >= 1) {
-        	if(grid[row][col - 1].getIsExplored())
+        	//if(grid[row][col - 1].getIsExplored())
         		grid[row][col - 1].setIsVirtualWall();            // left cell
         }
-
+        repaint();
         if (col < Constants.MAP_COL - 1) {
-        	if(grid[row][col + 1].getIsExplored())
+        	//if(grid[row][col + 1].getIsExplored())
         		grid[row][col + 1].setIsVirtualWall();            // right cell
-        }
+        } 
+        repaint();
     } 
     
     public void clearObstacleCell(int row, int col){
@@ -362,4 +363,185 @@ public class Map extends JPanel{
 		grid[row - 1][col + 1].setIsVisitedByBot();
 		grid[row - 1][col - 1].setIsVisitedByBot();
 	}
+
+
+
+
+    /**
+     * return true is there are 3 blocks in front or 3 blocks on the left
+     * */
+    public boolean canCalibrate(Robot bot){
+    	int row = bot.getRobotPosRow();
+    	int col = bot.getRobotPosCol();
+    	
+    	DIRECTION dir= bot.getRobotCurDir();
+    	
+    	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
+
+		switch(dir){
+		case NORTH:
+			// left wall
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2) && checkIsObstacleOrBorderWall(row - 1, col - 2))
+				return true;
+
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row + 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			break;
+			
+			
+		case SOUTH:
+			// left wall
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2) && checkIsObstacleOrBorderWall(row + 1, col + 2))
+				return true;
+			
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row - 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			break;
+		
+		case EAST:
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1) && checkIsObstacleOrBorderWall(row + 2, col - 1))
+				return true;
+			
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row + 1, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;		
+			break;
+		
+		case WEST:
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1) && checkIsObstacleOrBorderWall(row - 2, col - 1))
+				return true;
+			
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col - 2)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			break;
+		}
+	
+		return false;
+    	
+    }
+    
+    
+    public boolean canCalibrateInFront(Robot bot){
+    	int row = bot.getRobotPosRow();
+    	int col = bot.getRobotPosCol();
+    	
+    	DIRECTION dir= bot.getRobotCurDir();
+    	
+    	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
+
+		switch(dir){
+		case NORTH:
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row + 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			break;
+			
+			
+		case SOUTH:
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row - 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			break;
+		
+		case EAST:
+
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row + 1, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;		
+			break;
+		
+		case WEST:
+
+			// front wall 			
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 1, col - 2)) blockInFront++;
+			if (blockInFront >=2) 
+				return true;
+			break;
+		}
+	
+		return false;
+    	
+    }
+
+    
+    public boolean canCalibrateOnLeft(Robot bot){
+    	int row = bot.getRobotPosRow();
+    	int col = bot.getRobotPosCol();
+    	
+    	DIRECTION dir= bot.getRobotCurDir();
+    	
+    	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
+
+		switch(dir){
+		case NORTH:
+			// left wall
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2) && checkIsObstacleOrBorderWall(row - 1, col - 2))
+				return true;
+
+			break;
+			
+			
+		case SOUTH:
+			// left wall
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2) && checkIsObstacleOrBorderWall(row + 1, col + 2))
+				return true;
+
+			break;
+		
+		case EAST:
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1) && checkIsObstacleOrBorderWall(row + 2, col - 1))
+				return true;
+				
+			break;
+		
+		case WEST:
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1) && checkIsObstacleOrBorderWall(row - 2, col - 1))
+				return true;
+
+			break;
+		}
+	
+		return false;
+    }
+    
+    public boolean checkIsObstacleOrBorderWall(int row, int col){
+    	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL)
+    		return true;
+    	
+    	if (isObstacleCell(row, col)) 
+    		return true;
+
+    	return false;
+    }
+    
+
+
+
+
 }

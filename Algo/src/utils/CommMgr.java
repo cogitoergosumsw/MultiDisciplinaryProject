@@ -53,10 +53,10 @@ public class CommMgr {
         System.out.println("Opening connection...");
 
         try {
-//            String HOST = "192.168.18.18";
-//            int PORT = 12318;
-        	String HOST = "127.0.0.1";
-        	int PORT = 10010;
+            String HOST = "192.168.18.18";
+            int PORT = 12319;
+//        	String HOST = "127.0.0.1";
+//        	int PORT = 10010;
         	
             conn = new Socket(HOST, PORT);
             System.out.println("connected...");
@@ -113,7 +113,7 @@ public class CommMgr {
             }      
             
             if (msgType != MAP_STRING1 && msgType!= MAP_STRING2)
-            	System.out.println("Sending out message:\n" + outputMsg);
+            	System.out.print("Sent out message: " + outputMsg);
            
             writer.write(outputMsg);
             writer.flush();
@@ -131,7 +131,7 @@ public class CommMgr {
     
     
     public String recvMsg() {
-        System.out.println("Receiving a message...");
+        System.out.print("\nReceiving a message: ");
 
         try {
             StringBuilder sb = new StringBuilder();

@@ -41,39 +41,6 @@ public class ExplorationAlgo {
      * Main method that is called to start the exploration.
      */
     public void runExploration() {
-    	//TODO
-//        if (bot.getRealBot()) {
-//            System.out.println("Starting calibration...");
-//            CommMgr.getCommMgr().recvMsg();
-//            if (bot.getRealBot()) {
-//                bot.move(MOVEMENT.LEFT, false);
-//                CommMgr.getCommMgr().recvMsg();
-//                bot.move(MOVEMENT.CALIBRATE, false);
-//                CommMgr.getCommMgr().recvMsg();
-//                bot.move(MOVEMENT.LEFT, false);
-//                CommMgr.getCommMgr().recvMsg();
-//                bot.move(MOVEMENT.CALIBRATE, false);
-//                CommMgr.getCommMgr().recvMsg();
-//                bot.move(MOVEMENT.RIGHT, false);
-//                CommMgr.getCommMgr().recvMsg();
-//                bot.move(MOVEMENT.CALIBRATE, false);
-//                CommMgr.getCommMgr().recvMsg();
-//                bot.move(MOVEMENT.RIGHT, false);
-//            }
-    	
-    	//TODO
-//
-//            while (true) {
-//                System.out.println("Waiting for EX_START...");
-//                String msg = CommMgr.getCommMgr().recvMsg();
-//                //String[] msgArr = msg.split(";");
-//                //if (msgArr[0].equals(CommMgr.EX_START)) break;   //????
-//                if (msg.equals(CommMgr.EX_START)) break;
-//            }
-//        }
-    	
-    	//debug
-    	//System.out.println("debug: inside runExploration\n");
     	
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);
@@ -81,18 +48,8 @@ public class ExplorationAlgo {
         if (bot.getRealBot()) {
             CommMgr.getCommMgr().sendMsg(CommMgr.BOT_START);
         }
-        
-        bot.setSensors();
-        
-        
-        ////// debug //////  discard one message 
-//        CommMgr commMgr = CommMgr.getCommMgr();
-//        String extraMsg = commMgr.recvMsg();
-//        System.out.print("___________extra messsage: " + extraMsg);
-//        ////// debug //////
-     
-        bot.sense(exploredMap, realMap);
-        exploredMap.repaint();
+
+        senseAndRepaint();
 
         areaExplored = exploredMap.calculateAreaExplored();  
         System.out.println("Explored Area: " + areaExplored);
@@ -106,6 +63,61 @@ public class ExplorationAlgo {
         }
     }
 
+
+    
+    /**
+     * Loops through robot movements until one (or more) of the following conditions is met:
+     * 1. Robot is back at (r, c)
+     * 2. areaExplored > coverageLimit
+     * 3. System.currentTimeMillis() > endTime
+     */
+    private void explorationLoop(int startR, int startC) {
+    	CommMgr commMgr = CommMgr.getCommMgr();
+    	
+    	initialCalibration();
+
+    	moveCount = 1;
+    	do {
+
+//    		System.out.println("moveCount = " + moveCount);
+//        	if (bot.getRealBot() && moveCount % 3 == 0){
+//        		if (canCalibrate(bot))
+//        			moveBot(MOVEMENT.CALIBRATE);
+//        		
+//             }
+        	System.out.println("last calibrated = " + bot.getLastCalibrated());
+        	
+        	if (bot.getLastCalibrated() >= 3){
+        		if (exploredMap.canCalibrate(bot)){
+        			moveBot(MOVEMENT.CALIBRATE);
+        		}	
+        	}
+    		
+        	exploredMap.setCellsVisitedByBot();
+    		
+        	
+        	nextMove(); 
+            areaExplored = exploredMap.calculateAreaExplored();
+            //System.out.println("Area explored: " + areaExplored);
+            
+            
+            //TODO remove this , bot stops when it goes back to the starting zone
+            if (bot.getRobotPosRow() == startR && bot.getRobotPosCol() == startC && bot.getTouchedGoal() ) {
+//                if (areaExplored != Constants.MAP_SIZE){
+//                	exploreUnexploredArea();
+//                }
+            	System.out.print("robot has reached starting zone again, stops exploring");
+                break;          	      
+            }
+            moveCount ++ ; 
+        } while (areaExplored < coverageLimit && System.currentTimeMillis() < endTime);
+    	
+    	System.out.println("areaExplored = " + areaExplored + " , systemtime = " + System.currentTimeMillis() + "endtime = " + endTime);
+        goHome();
+        
+    }
+   
+    
     /**
      * initial calibration in the starting zone 
      * turn 180 degree to face south, calibrate
@@ -124,60 +136,70 @@ public class ExplorationAlgo {
     
     }
     
-    
     /**
-     * Loops through robot movements until one (or more) of the following conditions is met:
-     * 1. Robot is back at (r, c)
-     * 2. areaExplored > coverageLimit
-     * 3. System.currentTimeMillis() > endTime
+     * if there's no obstacle on the left then move left, 
+     * if not and if there's no obstacle in front, move forward,
+     * if not and if there's no obstacle on the right, move right 
+     * else, turn 180 degrees
      */
-    
-    /**
-     * @TODO move 3 steps if no obstacle in front 
-     * */
-    private void explorationLoop(int startR, int startC) {
-    	CommMgr commMgr = CommMgr.getCommMgr();
+    private void nextMove() {
     	
-    	initialCalibration();
-
-    	moveCount = 1;
-    	do {
-    		//TODO send calibration 
-    		System.out.println("moveCount = " + moveCount);
-        	if (bot.getRealBot() && moveCount % 3 == 0){
-        		if (canCalibrate(bot))
-        			moveBot(MOVEMENT.CALIBRATE);
-        		
-             }
-        	exploredMap.setCellsVisitedByBot();
-    		
-        	
-        	nextMove(); 
-    		System.out.println(canCalibrate(bot));
-            areaExplored = exploredMap.calculateAreaExplored();
-            System.out.println("Area explored: " + areaExplored);
-            
-            
-            //TODO remove this , bot stops when it goes back to the starting zone
-            if (bot.getRobotPosRow() == startR && bot.getRobotPosCol() == startC && bot.getTouchedGoal() ) {
-//                if (areaExplored != Constants.MAP_SIZE){
-//                	exploreUnexploredArea();
-//                }
-            	System.out.print("robot has reached starting zone again, stops exploring");
-                break;          	      
+        if (lookLeft()) {
+            moveBot(MOVEMENT.LEFT);
+            if (lookForward()) {
+            	moveBot(MOVEMENT.FORWARD);
+            	moveCount ++ ;
             }
-            moveCount ++ ; 
-        } while (areaExplored < coverageLimit && System.currentTimeMillis() < endTime);
-    	
-    	System.out.println("areaExplored = " + areaExplored + " , systemtime = " + System.currentTimeMillis() + "endtime = " + endTime);
-        goHome();
-        
+            numberOfContinuousLeftTurn++;
+            
+            if ( numberOfContinuousLeftTurn == 4){
+            	numberOfContinuousLeftTurn = 0;
+            	goToNearestExploredNearWall();
+            	//goToNearestUnexplored(bot.getCell());
+            }
+        } else if (lookForward()) {
+            moveBot(MOVEMENT.FORWARD);
+            numberOfContinuousLeftTurn = 0;
+            
+        } else if (lookRight()) {
+        	
+        	//?????
+        	// calibrate on both left and front before turning right 
+        	if (exploredMap.canCalibrate(bot)){
+        		
+        		if (exploredMap.canCalibrateOnLeft(bot)){
+        			moveBot(MOVEMENT.LEFT);
+            		moveBot(MOVEMENT.CALIBRATE);
+            		moveBot(MOVEMENT.RIGHT);
+        		}
+        		if(exploredMap.canCalibrateInFront(bot)){
+        			moveBot(MOVEMENT.CALIBRATE);
+        		}
+        	}
+        	//
+        	
+        	
+            moveBot(MOVEMENT.RIGHT);
+            if (lookForward()){
+            	moveBot(MOVEMENT.FORWARD);
+            	moveCount++;
+            }
+            numberOfContinuousLeftTurn = 0;
+        } else {
+        	
+            moveBot(MOVEMENT.LEFT);
+            moveBot(MOVEMENT.LEFT);
+            
+            numberOfContinuousLeftTurn = 0;
+            moveCount++;
+        }
     }
+   
+    
     /**
      * explore unexplored area by going to the nearest unexplored cell
      * move for 5 steps, then go to nearest unexplored cell again
-     * */
-    
+     * */  
     private void exploreUnexploredArea(){
     	int areaExplored = exploredMap.calculateAreaExplored();
     	int newAreaExplored = 0;
@@ -326,62 +348,6 @@ public class ExplorationAlgo {
    }
    
     
-    /**
-     * if there's no obstacle on the left then move left, 
-     * if not and if there's no obstacle in front, move forward,
-     * if not and if there's no obstacle on the right, move right 
-     * else, turn 180 degrees
-     */
-    
-    //!!!! change !!!!//
-    
-    private void nextMove() {
-    	
-        if (lookLeft()) {
-            moveBot(MOVEMENT.LEFT);
-            if (lookForward()) {
-            	moveBot(MOVEMENT.FORWARD);
-            	moveCount ++ ;
-            }
-            numberOfContinuousLeftTurn++;
-            
-            if ( numberOfContinuousLeftTurn == 4){
-            	numberOfContinuousLeftTurn = 0;
-            	goToNearestExploredNearWall();
-            	//goToNearestUnexplored(bot.getCell());
-            }
-        } else if (lookForward()) {
-            moveBot(MOVEMENT.FORWARD);
-            numberOfContinuousLeftTurn = 0;
-            
-        } else if (lookRight()) {
-        	
-        	//?????
-        	// calibrate on both left and front before turning right 
-        	if (canCalibrate(bot)){
-        		moveBot(MOVEMENT.LEFT);
-        		moveBot(MOVEMENT.CALIBRATE);
-        		moveBot(MOVEMENT.RIGHT);
-        		moveBot(MOVEMENT.CALIBRATE);
-        	}
-        	//
-        	
-        	
-            moveBot(MOVEMENT.RIGHT);
-            if (lookForward()){
-            	moveBot(MOVEMENT.FORWARD);
-            	moveCount++;
-            }
-            numberOfContinuousLeftTurn = 0;
-        } else {
-        	
-            moveBot(MOVEMENT.LEFT);
-            moveBot(MOVEMENT.LEFT);
-            
-            numberOfContinuousLeftTurn = 0;
-            moveCount++;
-        }
-    }
 
     /**
      * Returns true if the right side of the robot is free to move into.
@@ -666,86 +632,7 @@ public class ExplorationAlgo {
 //            moveBot(MOVEMENT.RIGHT);
 //        }
 //    }
-   
-    /**
-     * return true is there are 3 blocks in front or 3 blocks on the left
-     * */
-    private boolean canCalibrate(Robot bot){
-    	int row = bot.getRobotPosRow();
-    	int col = bot.getRobotPosCol();
-    	
-    	DIRECTION dir= bot.getRobotCurDir();
-    	
-    	int blockInFront = 0; // need at least 2 blocks in front to calibrate 
-
-		switch(dir){
-		case NORTH:
-			// left wall
-			if (checkIsObstacleOrBorderWall(row + 1, col - 2) && checkIsObstacleOrBorderWall(row - 1, col - 2))
-				return true;
-
-			// front wall 			
-			if (checkIsObstacleOrBorderWall(row + 2, col - 1)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row + 2, col)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row + 2, col + 1)) blockInFront++;
-			if (blockInFront >=2) 
-				return true;
-			break;
-			
-			
-		case SOUTH:
-			// left wall
-			if (checkIsObstacleOrBorderWall(row - 1, col + 2) && checkIsObstacleOrBorderWall(row + 1, col + 2))
-				return true;
-			
-			// front wall 			
-			if (checkIsObstacleOrBorderWall(row - 2, col - 1)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row - 2, col)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row - 2, col + 1)) blockInFront++;
-			if (blockInFront >=2) 
-				return true;
-			break;
-		
-		case EAST:
-			if (checkIsObstacleOrBorderWall(row + 2, col + 1) && checkIsObstacleOrBorderWall(row + 2, col - 1))
-				return true;
-			
-			// front wall 			
-			if (checkIsObstacleOrBorderWall(row + 1, col + 2)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row, col + 2)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row - 1, col + 2)) blockInFront++;
-			if (blockInFront >=2) 
-				return true;		
-			break;
-		
-		case WEST:
-			if (checkIsObstacleOrBorderWall(row - 2, col + 1) && checkIsObstacleOrBorderWall(row - 2, col - 1))
-				return true;
-			
-			// front wall 			
-			if (checkIsObstacleOrBorderWall(row + 1, col - 2)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row, col - 2)) blockInFront++;
-			if (checkIsObstacleOrBorderWall(row - 1, col - 2)) blockInFront++;
-			if (blockInFront >=2) 
-				return true;
-			break;
-		}
-	
-		return false;
-    	
-    }
-    
-    public boolean checkIsObstacleOrBorderWall(int row, int col){
-    	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL)
-    		return true;
-    	
-    	if (exploredMap.isObstacleCell(row, col)) 
-    		return true;
-
-    	return false;
-    }
-    
-}
+   }
 
     
     

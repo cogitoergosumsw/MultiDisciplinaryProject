@@ -229,10 +229,7 @@ public class Simulator{
     	addButton_coverageLimited();
     	addButton_wayPoint();
     	addButton_reset();
-    	
-    	
-            
-        
+  
     }
 
     private static void addButton_wayPoint() {

@@ -44,7 +44,7 @@ public class Robot{
 	private final Sensor SLRight;            // senor (long) on the right 
     private boolean touchedGoal;
     private final boolean realBot;
-   
+    private int lastCalibrated = 0;
 
     public Robot(int row, int col, boolean realBot) {
         posRow = row;
@@ -98,7 +98,21 @@ public class Robot{
     }
 
     public boolean getTouchedGoal() {
+
         return this.touchedGoal;
+    }
+    
+    
+    public int getLastCalibrated(){
+    	return this.lastCalibrated;
+    }
+    
+    public void incLastCalibrated(){
+    	lastCalibrated++;
+    }
+    
+    public void setLastCalibrated(int lastCalibrated){
+    	this.lastCalibrated = lastCalibrated;
     }
 
     /**
@@ -114,7 +128,9 @@ public class Robot{
                 System.out.println("Something went wrong in Robot.move()!");
             }
         }
-           
+         
+        incLastCalibrated();
+        
         switch (m) {
         case FORWARD:
             switch (robotDir) {
@@ -153,6 +169,7 @@ public class Robot{
             robotDir = findNewDirection(m);
             break;
         case CALIBRATE:
+        	setLastCalibrated(0);
             break;
         default:
             System.out.println("Error in Robot.move()!");
