@@ -270,29 +270,40 @@ public class FastestPathAlgo {
 //			 System.out.println("Movement " + MOVEMENT.print(m) + " from (" + tempBot.getRobotPosRow() + ", " + tempBot.getRobotPosCol() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
 			
 	         tempBot.move(m);
-	         
-	         exploredMap.setCellsVisitedByBot(tempBot.getRobotPosRow(), tempBot.getRobotPosCol());
-	         
+	         exploredMap.setCellsVisitedByBot(tempBot.getRobotPosRow(), tempBot.getRobotPosCol());	         
 	         movements.add(m);
-	        
-	         stepSinceLastCalibrate ++;
-	         if (m == MOVEMENT.RIGHT || m == MOVEMENT.LEFT || stepSinceLastCalibrate >= 6){
-	        	 if (exploredMap.canCalibrateInFront(tempBot)){
-	        		 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
-	        		 stepSinceLastCalibrate = 0;
-	        	 }
-	         } 
-	         outputString.append(MOVEMENT.print(m));
 	         
 	         
-//	         outputString.append(MOVEMENT.print(m));	         
-//	         // add calibration if possible 
-//	         stepSinceLastCalibrate ++;
-//	         if (exploredMap.canCalibrate(tempBot) & stepSinceLastCalibrate >= 3){
-//	        	 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
-//	        	 stepSinceLastCalibrate = 0;
-//	         }
-//	         
+	         if (fpMode){
+	        	 System.out.print("in fpMode"); ////
+	        	 
+	        	// add calibration only when turning during fastest path mode 
+	        	 stepSinceLastCalibrate ++;
+		         if (m == MOVEMENT.RIGHT || m == MOVEMENT.LEFT) { //|| stepSinceLastCalibrate >= 6){
+		        	 System.out.print("before left or right turn"); ////
+		        	 if (exploredMap.canCalibrate(tempBot)){
+		        		 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
+		        		 stepSinceLastCalibrate = 0;
+		        	 }
+		         } 
+		         outputString.append(MOVEMENT.print(m));
+		         
+	         } else {
+	        	 
+	        	 System.out.print("not in fpMode"); ////
+	        	 
+	        	 // add more calibration during exploration mode 
+	        	 stepSinceLastCalibrate ++;
+		         if (m == MOVEMENT.RIGHT || m == MOVEMENT.LEFT || stepSinceLastCalibrate >= 3){
+		        	 if (exploredMap.canCalibrate(tempBot)){
+		        		 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
+		        		 stepSinceLastCalibrate = 0;
+		        	 }
+		         } 
+		         outputString.append(MOVEMENT.print(m));         
+	         }
+	         
+	         
 	         
 		}
 		

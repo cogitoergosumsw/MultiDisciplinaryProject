@@ -424,7 +424,6 @@ public class Simulator{
             exploredMap.repaint();
 
             if (realRun) {
-            	System.out.println("debug line 437");
                 while (true) {
                     System.out.println("Waiting for FP_START...");
                     String msg = comm.recvMsg();
