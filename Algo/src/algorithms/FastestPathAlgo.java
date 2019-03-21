@@ -274,15 +274,25 @@ public class FastestPathAlgo {
 	         exploredMap.setCellsVisitedByBot(tempBot.getRobotPosRow(), tempBot.getRobotPosCol());
 	         
 	         movements.add(m);
+	        
+	         stepSinceLastCalibrate ++;
+	         if (m == MOVEMENT.RIGHT || m == MOVEMENT.LEFT || stepSinceLastCalibrate >= 6){
+	        	 if (exploredMap.canCalibrateInFront(tempBot)){
+	        		 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
+	        		 stepSinceLastCalibrate = 0;
+	        	 }
+	         } 
 	         outputString.append(MOVEMENT.print(m));
 	         
-	         // add calibration if possible 
-	         stepSinceLastCalibrate ++;
-	         if (exploredMap.canCalibrate(tempBot) & stepSinceLastCalibrate >= 3){
-	        	 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
-	        	 stepSinceLastCalibrate = 0;
-	         }
 	         
+//	         outputString.append(MOVEMENT.print(m));	         
+//	         // add calibration if possible 
+//	         stepSinceLastCalibrate ++;
+//	         if (exploredMap.canCalibrate(tempBot) & stepSinceLastCalibrate >= 3){
+//	        	 outputString.append(MOVEMENT.print(MOVEMENT.CALIBRATE));
+//	        	 stepSinceLastCalibrate = 0;
+//	         }
+//	         
 	         
 		}
 		

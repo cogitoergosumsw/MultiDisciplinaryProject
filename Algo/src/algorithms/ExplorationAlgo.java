@@ -9,6 +9,7 @@ import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import utils.CommMgr;
+import utils.MapDescriptor;
 import simulator.Constants;
 
 /**
@@ -25,7 +26,6 @@ public class ExplorationAlgo {
     private int areaExplored;
     private long startTime;
     private long endTime;
-    private int lastCalibrate;
     private boolean calibrationMode;
     private int numberOfContinuousLeftTurn = 0;
     private int moveCount;
@@ -58,9 +58,8 @@ public class ExplorationAlgo {
         
         
         if (bot.getRealBot()) {
-            CommMgr.getCommMgr().sendMsg(CommMgr.EX_DONE);
-            
-        }
+            CommMgr.getCommMgr().sendMsg(CommMgr.EX_DONE);         
+        }        
     }
 
 
@@ -74,7 +73,7 @@ public class ExplorationAlgo {
     private void explorationLoop(int startR, int startC) {
     	CommMgr commMgr = CommMgr.getCommMgr();
     	
-    	initialCalibration();
+    	//initialCalibration();
 
     	moveCount = 1;
     	do {

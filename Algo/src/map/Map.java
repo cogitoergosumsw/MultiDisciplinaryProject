@@ -474,9 +474,6 @@ public class Map extends JPanel{
 
     	return false;
     }
-    
-
-
 
 
 }

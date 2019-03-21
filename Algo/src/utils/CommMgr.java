@@ -53,10 +53,10 @@ public class CommMgr {
         System.out.println("Opening connection...");
 
         try {
-//            String HOST = "192.168.18.18";
-//            int PORT = 12319;
-        	String HOST = "127.0.0.1";
-        	int PORT = 10010;
+            String HOST = "192.168.18.18";
+            int PORT = 12318;
+//        	String HOST = "127.0.0.1";
+//        	int PORT = 10010;
         	
             conn = new Socket(HOST, PORT);
             System.out.println("connected...");

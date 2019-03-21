@@ -200,8 +200,8 @@ public class Simulator{
 		String[] msgArr = msg.split("\\|");
         String[] data = msgArr[1].split(",");
         
-        int row = Integer.parseInt(data[0].replaceAll("\\p{Punct}", ""));
-        int col = Integer.parseInt(data[1].replaceAll("\\p{Punct}", ""));
+        int col = Integer.parseInt(data[0].replaceAll("\\p{Punct}", ""));
+        int row = Integer.parseInt(data[1].replaceAll("\\p{Punct}", ""));
         exploredMap.grid[row][col].setIsWayPoint();
                
         wayPoint = new Cell(row, col);
@@ -443,9 +443,6 @@ public class Simulator{
                 String path2 = fastestPath.runFastestPath(Constants.GOAL_ROW, Constants.GOAL_COL);
                 
                 if (realRun) {
-                	//TODO send fastest path twice !!!
-                	comm.sendMsg(path1, CommMgr.MOVE);
-                	comm.sendMsg(path2, CommMgr.MOVE);
                 	comm.sendMsg("",CommMgr.FP_DONE);
                 }
                 
