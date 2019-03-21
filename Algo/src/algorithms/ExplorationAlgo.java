@@ -166,14 +166,19 @@ public class ExplorationAlgo {
         	// calibrate on both left and front before turning right 
         	if (exploredMap.canCalibrate(bot)){
         		
+        		
         		if (exploredMap.canCalibrateOnLeft(bot)){
         			moveBot(MOVEMENT.LEFT);
             		moveBot(MOVEMENT.CALIBRATE);
             		moveBot(MOVEMENT.RIGHT);
         		}
+        		
         		if(exploredMap.canCalibrateInFront(bot)){
         			moveBot(MOVEMENT.CALIBRATE);
         		}
+        		
+        		
+        		
         	}
         	//
         	

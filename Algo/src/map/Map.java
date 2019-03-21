@@ -425,7 +425,11 @@ public class Map extends JPanel{
     	
     }
 
+    
+   
+    
     public boolean canCalibrateOnLeft(Robot bot){
+        
     	int row = bot.getRobotPosRow();
     	int col = bot.getRobotPosCol();
     	
@@ -436,35 +440,42 @@ public class Map extends JPanel{
 		switch(dir){
 		case NORTH:
 			// left wall
-			if (checkIsObstacleOrBorderWall(row + 1, col - 2) && checkIsObstacleOrBorderWall(row - 1, col - 2))
+			if (checkIsObstacleOrBorderWall(row + 1, col - 2)) blockInFront++;		
+			if (checkIsObstacleOrBorderWall(row - 1, col - 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col - 2)) blockInFront++;
+			if (blockInFront >=2) 
 				return true;
-
 			break;
-			
-			
+					
 		case SOUTH:
-			// left wall
-			if (checkIsObstacleOrBorderWall(row - 1, col + 2) && checkIsObstacleOrBorderWall(row + 1, col + 2))
+			if (checkIsObstacleOrBorderWall(row - 1, col + 2)) blockInFront++;		
+			if (checkIsObstacleOrBorderWall(row + 1, col + 2)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row, col + 2)) blockInFront++;
+			if (blockInFront >=2) 
 				return true;
-
 			break;
 		
-		case EAST:
-			if (checkIsObstacleOrBorderWall(row + 2, col + 1) && checkIsObstacleOrBorderWall(row + 2, col - 1))
+		case EAST:			
+			if (checkIsObstacleOrBorderWall(row + 2, col + 1)) blockInFront++;		
+			if (checkIsObstacleOrBorderWall(row + 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row + 2, col)) blockInFront++;
+			if (blockInFront >=2) 
 				return true;
-				
 			break;
 		
-		case WEST:
-			if (checkIsObstacleOrBorderWall(row - 2, col + 1) && checkIsObstacleOrBorderWall(row - 2, col - 1))
+		case WEST:		
+			if (checkIsObstacleOrBorderWall(row - 2, col + 1)) blockInFront++;		
+			if (checkIsObstacleOrBorderWall(row - 2, col - 1)) blockInFront++;
+			if (checkIsObstacleOrBorderWall(row - 2, col)) blockInFront++;
+			if (blockInFront >=2) 
 				return true;
-
 			break;
 		}
-	
 		return false;
     }
     
+   
+
     public boolean checkIsObstacleOrBorderWall(int row, int col){
     	if (row == -1 || row == Constants.MAP_ROW  || col == -1 || col == Constants.MAP_COL)
     		return true;

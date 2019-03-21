@@ -275,7 +275,6 @@ public class FastestPathAlgo {
 	         
 	         
 	         if (fpMode){
-	        	 System.out.print("in fpMode"); ////
 	        	 
 	        	// add calibration only when turning during fastest path mode 
 	        	 stepSinceLastCalibrate ++;
@@ -288,10 +287,7 @@ public class FastestPathAlgo {
 		         } 
 		         outputString.append(MOVEMENT.print(m));
 		         
-	         } else {
-	        	 
-	        	 System.out.print("not in fpMode"); ////
-	        	 
+	         } else {	        	 
 	        	 // add more calibration during exploration mode 
 	        	 stepSinceLastCalibrate ++;
 		         if (m == MOVEMENT.RIGHT || m == MOVEMENT.LEFT || stepSinceLastCalibrate >= 3){
