@@ -1,6 +1,9 @@
 # import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+
+
+
 from multiprocessing import Queue
 from threading import Thread
 import numpy as np
@@ -12,12 +15,12 @@ class Camera:
     def __init__(self,que):
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
-        camera.resolution = (320,240)
+        camera.resolution = (1280,640)
         camera.framerate = 50
         camera.rotation = 180
         camera.video_stabilization = True
         self.camera = camera
-        self.rawCapture = PiRGBArray(camera, size=(320, 240))
+        self.rawCapture = PiRGBArray(camera, size=(1280, 640))
         # allow the camera to warmup
         time.sleep(0.2)
         #start capturing
@@ -36,7 +39,7 @@ class Camera:
         
         angle = round(math.degrees(math.acos((line1**2 + line2**2 - hypo**2)/(2*line1*line2))),1)
         
-        if (88<=angle<=92):
+        if (87<=angle<=92):
                 return True
         else:
                 return False
@@ -101,23 +104,54 @@ class Camera:
                                         message = "AD|"
                                 if self.checkangle(image,extRight,extLeft,extTop):
                                         message = "AU|"
-                                
                         if (len(message)>0):
-                                message = message+str(area/1000)+(';')
-                                print message
-                                cameraqueue.put(message)
-                                cv2.putText(image, "arrow", (x, y), font, 2, (0, 0, 255))
+                                area = (area/1000)
+                                Grid=''
+                                lateral=''
+                                if (20<= area):
+                                        Grid = 3
+                                        if (cX<580):
+                                                lateral = 1
+                                        if (700<cX<900):
+                                                lateral = 2
+                                        if (cX>1050):
+                                                lateral=3
+                                if (9<= area <= 11):
+                                        Grid = 4
+                                        if (cX<250):
+                                                lateral = 0
+                                        if (370<cX<580):
+                                                lateral = 1
+                                        if (680<cX<820):
+                                                lateral = 2
+                                        if (cX>950):
+                                                lateral = 3
+                                if (5.9<= area <=7.5):
+                                        Grid = 5
+                                        if (cX<300):
+                                                lateral = 0
+                                        if (400<cX<580):
+                                                lateral = 1
+                                        if (650<cX<820):
+                                                lateral = 2
+                                        if (cX>1000):
+                                                lateral = 3
+                                
+                                if (message is 'AU|' and lateral is not'' and Grid is not''):
+                                        message = message+str(lateral)+","+str(Grid)+';'
+                                        print message
+                                        cameraqueue.put(message)
+                                        cv2.putText(image, "arrow", (x, y), font, 2, (0, 0, 255))
             
 
-            cv2.imshow("im",image)
+            #cv2.imshow("im",image)
             rawCapture.truncate(0)
             if key == ord("q"): 
                 break
 
-        
-"""
+
 if __name__ == "__main__":
         placeholder = Queue(maxsize=0)
         c = Camera(placeholder);
-"""
+
  

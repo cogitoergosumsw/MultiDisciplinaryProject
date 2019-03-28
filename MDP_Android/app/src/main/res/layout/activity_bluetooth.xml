@@ -1,0 +1,59 @@
+<!-- fragment_edit_name.xml -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/bluetooth_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/toolbar"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingTop="80dp"
+        android:paddingRight="24dp">
+
+
+
+        <TextView
+            android:id="@+id/bt_status_text_frag"
+            android:layout_width="fill_parent"
+            android:layout_height="56dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Not Connected" />
+
+        <Button
+            android:id="@+id/btn_discover"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="-4dp"
+            android:layout_width="100dp"
+            android:layout_height="24dp"
+            android:background="@color/pink"
+            android:textColor="@color/White"
+            android:textSize="12sp"
+            android:text="Discover"/>
+
+        <!-- Line for aesthetic purposes -->
+        <View
+            android:id="@+id/linebreak"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/bt_status_text_frag"
+            android:layout_marginTop="-36dp"
+            android:background="#CCCCCC" />
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:color="#000000"
+            android:paddingTop="32dp"
+            android:scrollbars="none" />
+    </RelativeLayout>
+</RelativeLayout>

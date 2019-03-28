@@ -18,8 +18,6 @@ class mainthreading(Thread):
         self.btlist = Queue(maxsize=0)
         self.arduinolist = Queue(maxsize=0)
         self.tcplist = Queue(maxsize=0)
-        # place holder queue for listening threads
-        self.placeholder = Queue(maxsize=0)
         # create queue for camera threads
         self.cameraaa = Queue(maxsize=0)
 
@@ -33,7 +31,7 @@ class mainthreading(Thread):
         print('child process id:', os.getpid())
 
     def arduinor_p(self,tcplist):
-        print(current_thread(), 'Arduino read process')
+        self.info('Arduino read process')
         while True:
             data = self.arduino.read()
             if (data and 'SENSOR_DATA|' in data):
@@ -42,7 +40,7 @@ class mainthreading(Thread):
 
                 
     def arduinow_p(self,arduinolist):
-        print(current_thread(), 'Arduino write process')
+        self.info('Arduino Write process')
         while True:
                 if (arduinolist.qsize() > 0):
                     message = arduinolist.get(True,10)
@@ -51,17 +49,6 @@ class mainthreading(Thread):
             
                 
 
-    # listen to camera queue
-    def listen_tocamera(self):
-        print(current_thread(), 'camera listen Thread')
-        while (True):
-            if not (self.cameraaa.empty()):
-                try:
-                    print 'Camera read thread'
-                    message = self.cameraaa.get()
-                    self.btlist.append(message)  # send message to bluetooth from camera
-                except Exception as e:
-                    print("error reading from camera %s" % e)
 
     # process to start camera, place queue
     def startcamera(self):
@@ -70,7 +57,7 @@ class mainthreading(Thread):
 
     # process to read from bluetooth
     def bluetoothr_p(self,btlist,tcplist,arduinolist):
-        print(current_thread(), 'BT read')
+        self.info('Bluetooth read process')
         status = ''
 
         while (True):
@@ -91,9 +78,9 @@ class mainthreading(Thread):
                         if (len(subdata) > 0):
                                 print (" Bluetooth data recieved was : %s AT %s"%(subdata,time.ctime()))
                                 tcplist.put_nowait(subdata)
-                                if (subdata == 'F' or subdata ==  'L' or subdata == 'R'  or subdata == 'CALIBRATE|'):
-                                        print "ENTERED INTO ARDUINO LIST"
-                                        print subdata
+                                if (subdata == 'F' or subdata ==  'L' or subdata == 'R'  or subdata == 'C' or 'MOVE|' in  subdata):
+     #                                   print "ENTERED INTO ARDUINO LIST"
+      #                                  print subdata
                                         arduinolist.put_nowait(subdata)  # add to aurdino deque
 
             except Exception as e:
@@ -101,7 +88,7 @@ class mainthreading(Thread):
                 
     #process to write to bluetooth            
     def bluetoothw_p(self,btlist):
-        print(current_thread(), 'BT Write')
+        self.info('Bluetooth write process')
         while (True):
             if (btlist.qsize() > 0):
                 message = btlist.get(True,10)
@@ -112,7 +99,7 @@ class mainthreading(Thread):
 
     # process to write data from TCP 
     def TCPw_p(self,tcplist):
-        print(current_thread(), 'TCP process')
+        self.info('TCP Write process')
         while True:
             if (tcplist.qsize() > 0):
                 message = tcplist.get(True,10)
@@ -121,11 +108,12 @@ class mainthreading(Thread):
                 
     # process to read from TCP            
     def TCPr_p(self,arduinolist,btlist):
+        self.info('TCP Read process')
         while True:
             data = self.tcp.tcp_read()
             try:
                 if data != '':
-                    print("Algorithim data recieved was: %s AT %s" % (data,time.ctime()))
+    #                print("Algorithim data recieved was: %s AT %s" % (data,time.ctime()))
                     messages = data.split(";")
                     for message in messages:
                         if (len(message) > 1):
@@ -134,9 +122,15 @@ class mainthreading(Thread):
                                 if ("MOVE|" in message):
                                         message = message.split('|')
                                         message = message[1]
+                                        btlist.put_nowait("MOVE|" + message+ ";")
                                         arduinolist.put_nowait(message)
                                 else:
-                                        btlist.put_nowait(message+';')
+					btlist.put_nowait(message+';')
+                                        if ("BOT|" in message):
+                                          if not (self.cameraaa.empty()):
+                                            cmessage = self.cameraaa.get()
+                                            btlist.put_nowait(cmessage)  
+                                           
             
             except KeyboardInterrupt:
                     self.tcp.close()
@@ -199,49 +193,47 @@ class mainthreading(Thread):
         establish_tcp_t = Thread(target=self.establish_tcp)
         establish_ard_t = Thread(target=self.establish_ard)
         establish_bluetooth_t = Thread(target=self.establish_bluetooth)
-        #c = Process(target=self.startcamera)
         
         #PROCESSES 
         bluetoothr_p = Process(target=self.bluetoothr_p,args=(self.btlist,self.tcplist,self.arduinolist)) #Read BT process
         bluetoothw_p = Process(target=self.bluetoothw_p,args=(self.btlist,)) #Write BT process
-        #listen_camera = Thread(target=self.listen_tocamera)
         arduinor_p = Process(target=self.arduinor_p,args = (self.tcplist,)) #Arduino read and write process
         arduinow_p = Process(target=self.arduinow_p,args = (self.arduinolist,)) #Arduino read and write process
         TCPw_p = Process(target=self.TCPw_p,args = (self.tcplist,)) #TCP write process
         TCPr_p = Process(target=self.TCPr_p,args=(self.arduinolist,self.btlist)) #TCP read process
+        c = Process(target=self.startcamera) #Start camera process
+
                
         #PROCESS DAEMONS
         bluetoothr_p.daemon=True
         bluetoothw_p.daemon = True
         TCPw_p.daemon = True
         TCPr_p.daemon = True
-        #listen_camera.setDaemon(True)
         arduinor_p.daemon = True
         arduinow_p.daemon = True
-    
+        c.daemon = True
+
         #SUBSYSTEM DAEMON THREAD
         establish_tcp_t.setDaemon(True)
         establish_ard_t.setDaemon(True)
         establish_bluetooth_t.setDaemon(True)
-        #c.daemon = True
         
-        #SUBSYSTEM STARTING PROCESS
+        #SUBSYSTEM STARTING Threads
         establish_tcp_t.start()
         establish_ard_t.start()
         establish_bluetooth_t.start()
-        #c.start()
         
-        #SUBSYSTEM JOINING PROCESS
+        #SUBSYSTEM JOINING Threads
         establish_tcp_t.join()
         establish_ard_t.join()
         establish_bluetooth_t.join()
-        
+      
         # STARTING PROCESS
+        c.start()
         bluetoothr_p.start()
         bluetoothw_p.start()
         TCPw_p.start()
         TCPr_p.start()
-        #listen_camera.start()
         arduinor_p.start()
         arduinow_p.start()
         
@@ -250,11 +242,9 @@ class mainthreading(Thread):
         bluetoothw_p.join()
         TCPw_p.join()
         TCPr_p.join()
-        #listen_camera.join()
         arduinor_p.join()
         arduinow_p.join()
-        #CAMERA PROCESS TO RUN TILL THE END
-        #c.join()
+        c.join()
 
         
 
