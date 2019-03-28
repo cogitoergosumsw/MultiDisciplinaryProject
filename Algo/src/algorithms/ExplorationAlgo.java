@@ -87,9 +87,9 @@ public class ExplorationAlgo {
         	System.out.println("last calibrated = " + bot.getLastCalibrated());
         	
         	if (bot.getLastCalibrated() >= 3){
-//        		if (exploredMap.canCalibrate(bot)){
+        		if (exploredMap.canCalibrate(bot)){
         			moveBot(MOVEMENT.CALIBRATE);
-//        		}	
+        		}
         	}
     		
         	exploredMap.setCellsVisitedByBot();
@@ -177,13 +177,19 @@ public class ExplorationAlgo {
         			moveBot(MOVEMENT.CALIBRATE);
         		}
         		
-        		
-        		
+        		// ??? 
+        		moveBot(MOVEMENT.RIGHT); 		
+        		bot.setLastCalibrated(0);
+        	} else {
+        		moveBot(MOVEMENT.RIGHT);
         	}
-        	//
         	
         	
-            moveBot(MOVEMENT.RIGHT);
+        	
+            
+
+            
+            
             if (lookForward()){
             	moveBot(MOVEMENT.FORWARD);
             	moveCount++;
@@ -486,7 +492,7 @@ public class ExplorationAlgo {
         		moveBot(MOVEMENT.RIGHT);
         	} else{
         		moveBot(MOVEMENT.CALIBRATE);
-        	}
+        	} 	
         		
         }
        

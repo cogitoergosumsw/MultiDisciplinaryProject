@@ -155,6 +155,11 @@ public class Sensor {
                      exploredMap.repaint(); //debug
                      
             	}	
+            	
+            	// if the current block is still obstacle, then stop processing further block 
+            	if (exploredMap.getCell(row, col).getIsObstacle())
+            		break;
+            	
             }
             
             
