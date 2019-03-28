@@ -87,9 +87,9 @@ public class ExplorationAlgo {
         	System.out.println("last calibrated = " + bot.getLastCalibrated());
         	
         	if (bot.getLastCalibrated() >= 3){
-        		if (exploredMap.canCalibrate(bot)){
+//        		if (exploredMap.canCalibrate(bot)){
         			moveBot(MOVEMENT.CALIBRATE);
-        		}	
+//        		}	
         	}
     		
         	exploredMap.setCellsVisitedByBot();
