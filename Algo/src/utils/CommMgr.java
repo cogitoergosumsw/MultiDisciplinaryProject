@@ -54,7 +54,7 @@ public class CommMgr {
 
         try {
             String HOST = "192.168.18.18";
-            int PORT = 12319;
+            int PORT = 12318;
 //        	String HOST = "127.0.0.1";
 //        	int PORT = 10010;
         	

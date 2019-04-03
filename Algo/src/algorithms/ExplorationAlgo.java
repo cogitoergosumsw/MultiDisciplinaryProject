@@ -164,7 +164,7 @@ public class ExplorationAlgo {
         	
         	//?????
         	// calibrate on both left and front before turning right 
-        	if (exploredMap.canCalibrate(bot)){
+        	if (exploredMap.canCalibrate(bot) && bot.getLastCalibrated()!= 0){
         		
         		
         		if (exploredMap.canCalibrateOnLeft(bot)){
