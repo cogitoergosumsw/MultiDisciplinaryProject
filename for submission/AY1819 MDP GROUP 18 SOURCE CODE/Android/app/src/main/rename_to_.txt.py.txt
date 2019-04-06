@@ -1,0 +1,14 @@
+import os
+
+
+def main():
+    for file_name in os.listdir("."):
+        dest = "./" + file_name + ".txt"
+        if os.path.isdir(file_name):
+            print("do nth")
+        else:
+            os.rename(file_name, dest)
+
+
+if __name__ == '__main__':
+    main()
