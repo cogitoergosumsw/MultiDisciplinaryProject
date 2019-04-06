@@ -13,6 +13,11 @@ def main():
             new_file_name = os.path.join(path, file_name + ".txt")
             os.rename(new_file_path, new_file_name)
 
+    if os.path.exists("./rename_to_.txt.py.txt"):
+        os.remove("./rename_to_.txt.py.txt")
+    else:
+        print("renaming process is not done successfully")
+
 
 if __name__ == '__main__':
     main()
